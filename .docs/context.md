@@ -141,7 +141,7 @@ Loads from `/data/refined/` after Phase 4. Drops clips with `duration < 5s`, the
 
 **Phase 6 — split_and_upload.py** — not yet written
 
-Loads from `/data/refined/`. Performs stratified 80/10/10 train/valid/test split by `speaker_idx`. Reorders columns for clean HuggingFace dataset viewer presentation. Saves `DatasetDict` to `/data/final/`. Pushes to HuggingFace as `{HF_USERNAME}/sna-dataset-v1` with a dataset card. Writes `06_split_audit.json`.
+Loads from `/data/refined/`. Performs stratified 80/10/10 train/valid/test split by `speaker_idx`. Reorders columns for clean HuggingFace dataset viewer presentation. Saves `DatasetDict` to `/data/final/`. Pushes to HuggingFace as `{HF_USERNAME}/sna-dataset` with a dataset card. Writes `06_split_audit.json`.
 
 **Phase 7 — audit.py** — not yet written
 
@@ -166,7 +166,7 @@ The top 20 speakers were manually ear-tested (3 clips each) and rated. Results:
 **8 junk speakers** (ranks 86, 95, 116, 164–168) have mean clip duration ~1s — likely upload errors. Only 380 clips, 0.11h. Consider adding to blacklist.
 
 **Planned published datasets:**
-1. **Full general dataset** (`sna-dataset-v1`): all ~17k clips post-curation, all speakers, all quality levels. General-purpose, community contribution.
+1. **Full general dataset** (`sna-dataset`): all ~17k clips post-curation, all speakers, all quality levels. General-purpose, community contribution.
 2. **Premium TTS subset** (`sna-tts-v3`): filter `source_speaker_id IN (pristine_set + high_set)` = 11 speakers, ~6,994 clips, ~39 hours. For TTS fine-tuning (e.g. Sesame CSM 1B). No reprocessing needed — just a metadata filter on top of the full dataset.
 
 **Pristine speaker IDs** (for premium filter):
@@ -210,11 +210,11 @@ Phases 1–5 are in place (`cleanup_audio.py` added after audio normalization). 
 
 3. **Check both audits:** Review `04_normalize_audio_audit.json` and `05_cleanup_audio_audit.json` for drop reasons, duration distribution, and final retained speaker counts.
 
-4. **Write and run Phase 6 (`split_and_upload.py`):** Stratified split + HuggingFace push as `sna-dataset-v1` (the full general dataset).
+4. **Write and run Phase 6 (`split_and_upload.py`):** Stratified split + HuggingFace push as `sna-dataset` (the full general dataset).
 
 5. **Write and run Phase 7 (`audit.py`):** Final capstone audit report.
 
-6. **Publish premium subset:** After `sna-dataset-v1` is live, write a small script that filters to the 11 pristine+high speaker IDs and pushes as `sna-tts-v3`. This is just a filter + push, no reprocessing.
+6. **Publish premium subset:** After `sna-dataset` is live, write a small script that filters to the 11 pristine+high speaker IDs and pushes as `sna-tts-v3`. This is just a filter + push, no reprocessing.
 
 ---
 
