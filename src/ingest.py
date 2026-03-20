@@ -16,7 +16,7 @@ image = (
 
 @app.function(
     image=image,
-    cpu=4.0,
+    cpu=8.0,
     memory=32768,
     timeout=7200,
     volumes={"/data": data_vol},
@@ -39,31 +39,17 @@ def ingest():
     print("SNA DATA PIPELINE — PHASE 1: INGEST")
     print("=" * 60)
 
-    # --- Pull all three labeled splits ---
-    print("\n📥 Pulling train split...")
-    ds_train = load_dataset(
-        "google/WaxalNLP", "sna_asr", split="train",
-        trust_remote_code=True
-    )
-    print(f"   train: {len(ds_train)} rows")
+    labeled_splits = ["train", "validation", "test"]
 
-    print("📥 Pulling validation split...")
-    ds_valid = load_dataset(
-        "google/WaxalNLP", "sna_asr", split="validation",
-        trust_remote_code=True
-    )
-    print(f"   validation: {len(ds_valid)} rows")
+    def load_one_split(split_name):
+        print(f"\n📥 Pulling split '{split_name}'...")
+        ds = load_dataset("google/WaxalNLP", "sna_asr", split=split_name)
+        print(f"   {split_name}: {len(ds)} rows")
+        return ds
 
-    print("📥 Pulling test split...")
-    ds_test = load_dataset(
-        "google/WaxalNLP", "sna_asr", split="test",
-        trust_remote_code=True
-    )
-    print(f"   test: {len(ds_test)} rows")
-
-    # --- Concatenate into one flat dataset ---
-    print("\n🔗 Concatenating all labeled splits...")
-    dataset = concatenate_datasets([ds_train, ds_valid, ds_test])
+    split_datasets = [load_one_split(split_name) for split_name in labeled_splits]
+    print("\n🔗 Concatenating labeled splits...")
+    dataset = concatenate_datasets(split_datasets)
     print(f"   total rows: {len(dataset)}")
     print(f"   columns: {dataset.column_names}")
 
@@ -80,12 +66,8 @@ def ingest():
     print("-" * 40)
     speaker_counts = pd.Series(dataset["source_speaker_id"]).value_counts()
     total_speakers = len(speaker_counts)
-    tts_eligible_speakers = (speaker_counts >= 30).sum()
-    asr_only_speakers = (speaker_counts < 30).sum()
 
     print(f"   Total unique speakers:      {total_speakers}")
-    print(f"   TTS-eligible (≥30 clips):   {tts_eligible_speakers}")
-    print(f"   ASR-only     (<30 clips):   {asr_only_speakers}")
     print(f"\n   Top 10 speakers by clip count:")
     for spk, count in speaker_counts.head(10).items():
         bar = "█" * min(count // 10, 40)
@@ -108,33 +90,19 @@ def ingest():
     speaker_to_idx = {
         spk: idx for idx, spk in enumerate(speaker_counts.index)
     }
-    idx_to_speaker = {v: k for k, v in speaker_to_idx.items()}
 
     def add_speaker_idx(example):
         spk = example["source_speaker_id"]
         example["speaker_idx"] = speaker_to_idx[spk]
-        example["tts_eligible"] = speaker_counts[spk] >= 30
         return example
 
     print("   Mapping source_speaker_id → speaker_idx...")
-    dataset = dataset.map(add_speaker_idx)
-
-    # --- Basic audio duration audit (from metadata, no decoding) ---
-    print("\n🎙️  AUDIO DURATION AUDIT (raw source durations)")
-    print("-" * 40)
-    if "duration" in dataset.column_names:
-        durations = dataset["duration"]
-        durations_arr = pd.Series(durations)
-        print(f"   Mean duration:   {durations_arr.mean():.2f}s")
-        print(f"   Median duration: {durations_arr.median():.2f}s")
-        print(f"   Min duration:    {durations_arr.min():.2f}s")
-        print(f"   Max duration:    {durations_arr.max():.2f}s")
-        short = (durations_arr < 3).sum()
-        long_ = (durations_arr > 25).sum()
-        print(f"   Clips <3s:       {short}")
-        print(f"   Clips >25s:      {long_}")
-    else:
-        print("   No duration column in source — will compute from audio in curate step")
+    map_workers = max(1, min(8, (os.cpu_count() or 1)))
+    dataset = dataset.map(
+        add_speaker_idx,
+        num_proc=map_workers,
+        desc=f"Assigning speaker indices ({map_workers} workers)",
+    )
 
     # --- Transcription length audit ---
     print("\n📝 TRANSCRIPTION AUDIT")
@@ -156,8 +124,6 @@ def ingest():
         "columns": dataset.column_names,
         "speakers": {
             "total": int(total_speakers),
-            "tts_eligible_ge30": int(tts_eligible_speakers),
-            "asr_only_lt30": int(asr_only_speakers),
             "top10": {
                 str(k): int(v)
                 for k, v in speaker_counts.head(10).items()
