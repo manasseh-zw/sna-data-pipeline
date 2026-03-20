@@ -6,7 +6,7 @@ data_vol = modal.Volume.from_name("sna-data-vol", create_if_missing=True)
 
 image = (
     modal.Image.debian_slim(python_version="3.10")
-    .pip_install(
+    .uv_pip_install(
         "datasets[audio]",
         "pandas",
     )
