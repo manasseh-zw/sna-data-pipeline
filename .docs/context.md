@@ -2,61 +2,102 @@ You are helping build a data engineering pipeline for a Shona language (sna) spe
 
 **What we are building**
 
-A Modal-based data cleaning and preparation pipeline that takes the raw `google/WaxalNLP` Shona ASR dataset and produces a cleaned, annotated dataset ready for two downstream tasks: TTS fine-tuning on Sesame CSM-1B, and ASR fine-tuning on Whisper-small. The pipeline lives in its own repository `sna-data-pipeline` and is completely separate from any model training code.
+A Modal-based data cleaning and preparation pipeline that takes the raw `google/WaxalNLP` Shona ASR dataset and produces a cleaned, annotated dataset ready for downstream ASR and TTS fine-tuning. The pipeline lives in its own repository `sna-data-pipeline` and is completely separate from any model training code. The goal is a general-purpose, opinionation-free dataset — no training-time decisions baked in. Consumers filter using the metadata columns.
+
+The owner has a prior published version (`manassehzw/sna-tts-refined-v2`, 5,000 clips, ~21.66h) produced without speaker tracking or manual quality auditing. This new pipeline is the rigorous, properly engineered replacement.
+
+---
 
 **Infrastructure**
 
-We use Modal for all compute. Every script is a Modal app with a single function that runs remotely. Locally we only need `modal` and `python-dotenv` installed. All heavy dependencies are installed inside the Modal image definition at the top of each script. We have one Modal volume called `sna-data-vol` mounted at `/data` inside every container. The folder structure inside that volume is:
+We use Modal for all compute. Every pipeline script is a Modal app with a single function that runs remotely. Locally we only need `modal` and `python-dotenv` installed. All heavy dependencies are installed inside the Modal image definition at the top of each script. We have one Modal volume called `sna-data-vol` mounted at `/data` inside every container. The folder structure inside that volume is:
 
 ```
-/data/raw/        — ingested dataset saved here
-/data/refined/    — output of audio and text cleaning
-/data/final/      — split, normalised, upload-ready
-/data/reports/    — all audit JSON files from every phase
+/data/raw/           — ingested + metadata-annotated dataset
+/data/refined/       — output of text and audio cleaning phases
+/data/final/         — split, normalised, upload-ready
+/data/reports/       — all audit JSON files from every phase
+/data/curate_test/   — temporary: 500-clip sample for local curation testing
+/data/speaker_audit/ — speaker ranking report + 3-clip samples per top-20 speaker
 ```
 
-We have a second volume called `sna-weights-vol` which is reserved for model checkpoints in the training repo and is not used here. Secrets are loaded via `modal.Secret.from_dotenv()`. The `.env` file contains `HF_TOKEN` and `HF_USERNAME`.
+Secrets are loaded via `modal.Secret.from_dotenv()`. The `.env` file contains `HF_TOKEN` and `HF_USERNAME`.
+
+---
 
 **Source dataset**
 
-`google/WaxalNLP`, subset `sna_asr`. It has four splits: train (14.1k rows), validation (1.73k rows), test (1.75k rows), and unlabeled (85.4k rows — audio only, no transcriptions). We only work with the three labeled splits, concatenated into a single flat dataset of ~17.5k rows. The unlabeled split is ignored for now but will be used later for pseudo-labeling once a working Whisper-Shona model exists.
+`google/WaxalNLP`, subset `sna_asr`. Three labeled splits: train (14.1k), validation (1.73k), test (1.75k) — concatenated into a flat dataset of 17,585 rows. The unlabeled split (85.4k, audio only) is out of scope for this pipeline.
 
-Source columns from WaxalNLP: `id`, `speaker_id`, `transcription`, `gender`, `language`, `audio`. At ingest we immediately rename `id` → `source_id` and `speaker_id` → `source_speaker_id` to preserve provenance. These original values are never overwritten.
+Source columns: `id`, `speaker_id`, `transcription`, `gender`, `language`, `audio`. At ingest we rename `id` → `source_id` and `speaker_id` → `source_speaker_id`. These are never overwritten.
+
+---
 
 **Final dataset schema**
 
-Every row in the cleaned dataset must have exactly these columns:
-
 ```
-audio                 — trimmed, 16kHz, LUFS-normalised float32
+audio                 — trimmed, 24kHz, LUFS-normalised float32
 transcription         — normalised Shona text
-source_id             — original sna_XXXXX id from WaxalNLP
+source_id             — original id from WaxalNLP
 source_speaker_id     — original speaker hash from WaxalNLP
-speaker_idx           — stable integer 0..N, sorted by speaker frequency descending
-gender                — Male / Female / Other from source
-snr_db                — signal to noise ratio in dB
-speech_ratio          — fraction of frames containing speech
-quality_score         — composite SNR score used for ranking
-duration              - in seconds
+speaker_idx           — stable integer 0..N sorted by speaker frequency descending
+speaker_clip_count    — total clips for this speaker across the full dataset
+language              — normalised to lowercase (sna)
+gender                — normalised to Male / Female
+has_punctuation       — boolean derived from normalised transcription
+snr_db                — signal-to-noise ratio in dB
+speech_ratio          — fraction of VAD frames classified as speech
+quality_score         — composite score: snr_db minus reliability penalties
+duration              — trimmed clip duration in seconds
 ```
 
-The column `selection_tier` from the old pipeline is dropped. There is no top-K filtering — all 17.5k rows are kept unless they are hard failures (VAD finds zero speech, trimmed audio is empty). Duration filtering is NOT done at pipeline time — it is a training-time decision. The `tts_eligible` and `is_clipped` flags let training scripts filter appropriately without re-running the pipeline.
+No opinionated flag columns. Consumers filter using `speaker_clip_count`, `snr_db`, `speech_ratio`, and `duration` directly.
 
-**Pipeline phases and scripts**
+---
 
-The repo structure is:
+**Key design decisions — always respect these**
+
+- Hard-drop clips shorter than 5 seconds at ingest.
+- Never overwrite `source_speaker_id` or `source_id`.
+- `speaker_idx` mapping is stable from ingest — never recompute it in later phases.
+- Hard-drop only: duration < 5s at ingest, VAD finds zero speech, trimmed audio length is zero, or speaker is blacklisted.
+- All other rows are kept regardless of quality metrics.
+- Each script reads from one path and writes to one path. Never read and write to the same path without a temp → rename pattern.
+- Every script writes a numbered audit JSON to `/data/reports/`.
+- Pipeline runs in strict order: 1 → 2 → 3 → 4 → 5 → 6.
+- All scripts run from the **repo root** (not from `src/`).
+
+---
+
+**Repo structure**
 
 ```
 sna-data-pipeline/
 ├── src/
 │   ├── ingest.py
+│   ├── annotate_metadata.py
+│   ├── speaker_analysis.py       — analysis utility, not a pipeline phase
 │   ├── normalize_text.py
-│   ├── curate.py
-│   ├── diarize.py
-│   ├── normalize_audio.py
-│   ├── split_and_upload.py
-│   └── audit.py
-├── reports/
+│   ├── normalize_audio.py        — Phase 4, READY TO RUN (validated locally)
+│   ├── split_and_upload.py       — Phase 5, not yet written
+│   ├── audit.py                  — Phase 6, not yet written
+│   └── tests/
+│       ├── text/
+│       │   ├── unnormalized.txt
+│       │   ├── normalized.txt
+│       │   └── test_normalize.py
+│       ├── audio/
+│       │   ├── pull_samples.py        — Modal: pull 500 clips from volume → zip
+│       │   ├── test_curate.py         — local: run normalize_audio logic + write audit outputs
+│       │   ├── speaker_audit.py       — Modal: rank all speakers by talk time, pull 3 clips each
+│       │   └── samples/               — gitignored
+│       └── artifact_check/
+│           ├── detect.py              — kurtosis + HF energy artifact detector (see note)
+│           ├── input/                 — drop WAVs here to test
+│           └── rejected/              — copies of flagged clips
+├── .docs/
+│   ├── context.md                     — this file
+│   └── artifact_detection_attempt.md  — documents the dropped artifact detection approach
 ├── .env
 ├── .env.example
 ├── .gitignore
@@ -64,38 +105,119 @@ sna-data-pipeline/
 └── README.md
 ```
 
-**Phase 1 — ingest.py** (already written and working)
+---
 
-Pulls train + validation + test splits from WaxalNLP, concatenates them, renames `id` and `speaker_id` for provenance, builds `speaker_idx` integer mapping sorted by speaker frequency descending, adds `tts_eligible` flag, prints a full speaker and gender distribution audit to stdout, writes `01_ingest_audit.json` to `/data/reports/`, saves the dataset to `/data/raw/`.
+**Phase 1 — ingest.py** ✅ complete
 
-**Phase 2 — normalize_text.py**
+Pulls train + validation + test splits from WaxalNLP, concatenates them, hard-drops clips shorter than 5 seconds, renames columns for provenance, builds `speaker_idx` mapping sorted by speaker frequency descending, writes `01_ingest_audit.json`, saves to `/data/raw/`.
 
-Loads from `/data/raw/`. Applies text normalisation: lowercase, smart apostrophe fusion to ASCII apostrophe, replace dashes/hyphens with spaces, strip characters outside `[a-z0-9.,?' ]`, collapse whitespace. Adds `has_punctuation` boolean column. Prints a character frequency audit to catch unexpected characters or encoding artefacts. Writes `02_normalize_text_audit.json` to `/data/reports/`. Saves to `/data/refined/` as an intermediate checkpoint.
+**Phase 2 — annotate_metadata.py** ✅ complete
 
-**Phase 3 — curate.py**
+Loads from `/data/raw/`. Normalises `gender` to `Male`/`Female`, normalises `language` to lowercase, adds `speaker_clip_count` integer column derived from speaker frequency. Writes back to `/data/raw/` via temp → rename. Writes `annotate_metadata_audit.json`.
 
-Loads from `/data/refined/`. Resamples all audio to 16kHz mono. Runs WebRTC VAD with frame smoothing (existing logic from v1 was good — keep it). Trims leading and trailing silence with a 0.4s buffer. Then applies intra-utterance gap trimming — this is the most important new step: using the VAD frame mask, find gaps between speech segments within the utterance. If `has_punctuation=False`, trim any internal gap >150ms to 80ms. If `has_punctuation=True`, use 130ms target at commas and 220ms at periods. Computes SNR, speech_ratio, speech_seconds, trimmed_duration_s, quality_score. Adds `is_clipped` flag. Only hard-drops rows where VAD finds zero speech or trimmed audio length is zero. Writes `03_curate_audit.json`. Saves back to `/data/refined/` overwriting the intermediate.
+**Phase 3 — normalize_text.py** ✅ complete
 
-**Phase 4 — normalize_audio.py**
+Loads from `/data/raw/`. Normalises transcriptions: strips smart quotes to ASCII apostrophe, collapses em/en dashes to spaces, normalises spaced hyphens, inserts space after sentence-ending period followed by capital, strips characters outside `[A-Za-z0-9.,?!'" -]`, collapses whitespace. Casing is preserved. Adds `has_punctuation` boolean. Writes `02_normalize_text_audit.json`. Saves to `/data/refined/`.
 
-Loads from `/data/refined/`. Applies per-clip LUFS normalisation to -23 LUFS using `pyloudnorm`. Run after gap trimming so silence is not included in loudness calculation. Writes `04_normalize_audio_audit.json`. Saves back to `/data/refined/`.
+**Phase 4 — normalize_audio.py** ✅ locally validated, READY TO RUN on full dataset
 
-**Phase 5 — split_and_upload.py**
+Loads from `/data/refined/`. Resamples to 24kHz mono. Runs WebRTC VAD (aggressiveness=2, 30ms frames) with smoothing (drop bursts <3 frames, bridge gaps ≤2 frames). Trims leading/trailing silence with 0.4s buffer. Applies flat intra-utterance gap trimming: any internal gap >150ms is trimmed to 80ms. Recomputes VAD mask on trimmed audio. Computes `snr_db`, `speech_ratio`, `quality_score`, `duration`. Hard-drops only rows where VAD finds zero speech or audio is empty after trimming. Also hard-drops blacklisted speakers (see below). Writes `04_normalize_audio_audit.json`. Saves back to `/data/refined/`.
 
-Loads from `/data/refined/`. Performs a stratified train/valid/test split by `speaker_idx` so every speaker appears proportionally in all three splits (80/10/10). Uses `sklearn.model_selection.StratifiedShuffleSplit`. Saves the final `DatasetDict` to `/data/final/`. Then pushes to HuggingFace as `{HF_USERNAME}/sna-dataset-v3` with the dataset card describing the schema. Writes `05_split_audit.json`.
+**Blacklisted speakers in normalize_audio.py:**
+```python
+BLACKLISTED_SPEAKER_IDS = {
+    "DVRNxPvJnmebFbLnQhG9VSCLhdf2",   # 185 clips, all distorted/mumbled — manual review
+}
+```
+To add more: append to this set with a comment documenting the reason.
 
-**Phase 6 — audit.py**
+**Run command:** `modal run src/normalize_audio.py`
 
-Loads from `/data/final/`. Produces a comprehensive summary report across the full pipeline: total clips, total speech hours, speaker distribution, SNR statistics, speech ratio distribution, TTS-eligible vs ASR-only clip counts, gender balance, duration histogram buckets. This is the capstone-facing report. Writes `06_final_audit.json` and prints a formatted summary to stdout.
+**Phase 5 — cleanup_audio.py** ✅ written
 
-**Key design decisions to always respect**
+Loads from `/data/refined/` after Phase 4. Drops clips with `duration < 5s`, then drops clips from speakers that have only one remaining clip (singleton speakers). Refreshes `speaker_clip_count` from the post-cleanup dataset. Writes `05_cleanup_audio_audit.json`. Saves back to `/data/refined/` via temp → rename.
 
-Never filter by duration in the pipeline — record `trimmed_duration_s` and let training scripts decide. Never overwrite `source_speaker_id` or `source_id`. The `speaker_idx` mapping is written to `/data/reports/speaker_idx_mapping.json` at ingest time and must remain stable — do not recompute it in later phases. All filtering is done via boolean flag columns, not by dropping rows, except hard failures. Each script reads from one path and writes to one path — no script reads and writes to the same path in a way that could corrupt the dataset if it fails halfway (write to a temp path then rename if needed). Every script writes its own numbered audit JSON to `/data/reports/`. The pipeline is designed to be run in order: 1 → 2 → 3 → 4 → 5 → 6.
+**Run command:** `modal run src/cleanup_audio.py`
 
-**Current state**
+**Phase 6 — split_and_upload.py** — not yet written
 
-Phase 1 `ingest.py` is complete and working. The next script to write is `normalize_text.py`.
+Loads from `/data/refined/`. Performs stratified 80/10/10 train/valid/test split by `speaker_idx`. Reorders columns for clean HuggingFace dataset viewer presentation. Saves `DatasetDict` to `/data/final/`. Pushes to HuggingFace as `{HF_USERNAME}/sna-dataset-v1` with a dataset card. Writes `06_split_audit.json`.
+
+**Phase 7 — audit.py** — not yet written
+
+Loads from `/data/final/`. Produces capstone-facing summary: total clips, total hours, speaker distribution, SNR stats, speech ratio distribution, gender balance, duration histogram. Writes `07_final_audit.json`.
 
 ---
 
-That gives the agent everything it needs. Hand it that and say "write `normalize_text.py` next" and it will have full context to continue without you re-explaining anything.
+**Speaker audit findings (completed)**
+
+Full dataset: **168 speakers, 17,585 clips, ~99.4 hours of speech.**
+
+The top 20 speakers were manually ear-tested (3 clips each) and rated. Results:
+
+| Quality | Speakers | Clips | Hours | Notes |
+|---|---|---|---|---|
+| Pristine | 7 | 5,155 | 28.5h | 3,801 M / 1,354 F |
+| High | 4 | 1,839 | 10.5h | all female |
+| Medium-High | 4 | 1,418 | 9.4h | mixed |
+| Medium | 4 | 1,383 | 8.4h | mixed |
+| Medium-Low | 1 | 1,549 | 9.8h | rank-1 speaker, male |
+
+**8 junk speakers** (ranks 86, 95, 116, 164–168) have mean clip duration ~1s — likely upload errors. Only 380 clips, 0.11h. Consider adding to blacklist.
+
+**Planned published datasets:**
+1. **Full general dataset** (`sna-dataset-v1`): all ~17k clips post-curation, all speakers, all quality levels. General-purpose, community contribution.
+2. **Premium TTS subset** (`sna-tts-v3`): filter `source_speaker_id IN (pristine_set + high_set)` = 11 speakers, ~6,994 clips, ~39 hours. For TTS fine-tuning (e.g. Sesame CSM 1B). No reprocessing needed — just a metadata filter on top of the full dataset.
+
+**Pristine speaker IDs** (for premium filter):
+```
+T33w3KIsJJYMb9tmz2XxSYlgpcA2   male
+7UbpWlepR6OHT8S5tcibbkcQWOC2   male
+2Eud8lyLlsMcciYhmlkwVRtBwi82   male
+6yMVEvNaWJXi2UbPLujF6C4uGVJ3   female
+1PHOsx2JIpUU4lMLgTd3ssjITjf1   male
+CUBWhUHYrpdoA4u6bodqHGer0my1   female
+CZQ37aLaUZfNpliatFqfC42MBUC3   female
+```
+
+**High quality speaker IDs** (also included in premium):
+```
+4HdcZXLtmjhpO6zY9qLnLNCs7OJ2   female (note: gender mislabelled in source)
+f4LbqfoJ6HXJeYxnuIrfZlP7qaM2   female
+akPZ3sZLNmWepmQ73pcfOBhbAXC3   female
+2Q9Qx8uHQ5VAkWNdgqd7mVEeE2u1   female
+```
+
+---
+
+**Dropped exploration: artifact detection**
+
+Attempted kurtosis + high-frequency energy ratio detection for click/pop artifacts (`src/tests/artifact_check/detect.py`). False positive rate was ~93% on raw clips — Shona plosive consonants and natural speech variation are indistinguishable from artifacts at the signal level without a labelled baseline. Dropped. Documented in `.docs/artifact_detection_attempt.md` for dissertation reference.
+
+---
+
+**Current state**
+
+Phases 1–5 are in place (`cleanup_audio.py` added after audio normalization). Split/upload and final audit are still pending.
+
+---
+
+**Immediate next steps (in order)**
+
+1. **Run Phase 4:** `modal run src/normalize_audio.py` — process all clips, write `04_normalize_audio_audit.json`, overwrite `/data/refined/` with normalized audio + quality metrics.
+
+2. **Run Phase 5:** `modal run src/cleanup_audio.py` — enforce post-normalization cleanup rules (`duration < 5s` and singleton-speaker drops), refresh `speaker_clip_count`, and write `05_cleanup_audio_audit.json`.
+
+3. **Check both audits:** Review `04_normalize_audio_audit.json` and `05_cleanup_audio_audit.json` for drop reasons, duration distribution, and final retained speaker counts.
+
+4. **Write and run Phase 6 (`split_and_upload.py`):** Stratified split + HuggingFace push as `sna-dataset-v1` (the full general dataset).
+
+5. **Write and run Phase 7 (`audit.py`):** Final capstone audit report.
+
+6. **Publish premium subset:** After `sna-dataset-v1` is live, write a small script that filters to the 11 pristine+high speaker IDs and pushes as `sna-tts-v3`. This is just a filter + push, no reprocessing.
+
+---
+
+**Things noted but deliberately deferred**
+
+- Noise reduction / reverb correction: not applied. Full noise reduction (e.g. `noisereduce`) is deferred to future work.
