@@ -51,3 +51,9 @@ Thumbs.db
 
 # Local data / scratch (pipeline outputs)
 /data/
+src/speaker_audit/
+
+# Test sample artifacts
+src/tests/audio/samples/
+src/tests/audio/speaker_audit/
+src/tests/audio/*.zip
