@@ -1,6 +1,6 @@
 """
 Local test for normalize_text.py logic.
-Reads src/unnormalized.txt, applies normalization, writes src/normalized.txt,
+Reads src/tests/text/unnormalized.txt, applies normalization, writes src/tests/text/normalized.txt,
 and prints a line-by-line diff.
 """
 
@@ -51,8 +51,8 @@ def has_punctuation(text: str) -> bool:
 
 
 if __name__ == "__main__":
-    input_path = "src/tests/unnormalized.txt"
-    output_path = "src/tests/normalized.txt"
+    input_path = "src/tests/text/unnormalized.txt"
+    output_path = "src/tests/text/normalized.txt"
 
     with open(input_path, encoding="utf-8") as f:
         lines = [line.rstrip("\n") for line in f.readlines()]
