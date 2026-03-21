@@ -199,29 +199,56 @@ Attempted kurtosis + high-frequency energy ratio detection for click/pop artifac
 
 ---
 
+**Gender classifier artifact**
+
+A Shona-calibrated gender classifier has been built and validated as part of the relabeling workstream. It lives under `src/tests/audio/audit_speaker/` and is auto-loaded by the audit pipeline.
+
+```
+src/tests/audio/audit_speaker/
+├── train_gender_classifier.py        — trains logistic regression on ECAPA embeddings
+├── probe_gender_classifier.py        — validates classifier at scale, outputs female/male/unknown folders
+├── gender_training_data/
+│   ├── female/                       — labeled female WAV clips (gitignored)
+│   └── male/                         — labeled male WAV clips (gitignored)
+└── gender_classifier_ecapa.pkl       — trained model artifact (gitignored)
+```
+
+Key properties:
+- Model: `sklearn.linear_model.LogisticRegression` on L2-normalised 192-d ECAPA-TDNN embeddings
+- Training data: 391 clips total (bootstrapped from clean audit clusters + active learning ear-test pass)
+- 5-fold CV accuracy: 100%
+- Probe validation over 777 clips (39 speakers): 9.4% Unknown (clips below 0.65 confidence), zero confident wrong-gender predictions on verified speakers
+- Supersedes `prithivMLmods/Common-Voice-Gender-Detection` (Wav2Vec2) which produced confident mispredictions on Shona speech due to training distribution mismatch
+
+---
+
 **Current state**
 
-Core pipeline phases were completed and `sna-dataset` was pushed to Hugging Face. The active workstream has shifted from first-pass pipeline completion to second-pass speaker identity relabeling and consistency improvement.
+Core pipeline phases are complete and `sna-dataset` is published on Hugging Face. The active workstream is second-pass speaker identity relabeling.
 
-Current active direction:
+The local clustering audit (`audit_speaker_clusters.py`) has completed two runs:
+- **v2**: ECAPA + HDBSCAN + Wav2Vec2 gender model → 31 clusters, 4.6% noise, 4 MIXED_GENDER clusters. Identified gender model as unreliable on Shona.
+- **v3 (pending)**: Same HDBSCAN setup with the new logistic regression gender classifier loaded from `.pkl`. Gender-separated clustering (HDBSCAN within each gender partition) to be explored.
 
-- Build a labeled v2-style dataset (`sna-dataset-labeled`) by clustering speaker embeddings and correcting contaminated speaker IDs.
-- Use the local speaker sample audit workflow under `src/tests/audio/audit_speaker/` as the baseline for cluster tuning.
-- Prioritize speaker-label consistency over manual ear-testing every clip.
+The gender classifier has been validated via a probe script and an active learning ear-test loop. It is ready for the v3 audit run.
 
 ---
 
 **Immediate next steps (in order)**
 
-1. **Stabilize cluster audit workflow:** Keep using `src/tests/audio/audit_speaker/audit_speaker_clusters.py` with isolated environment from `src/tests/audio/audit_speaker/requirements.txt`.
+1. **Run v3 cluster audit:** Execute `audit_speaker_clusters.py` with the `.pkl` classifier active. Compare MIXED_GENDER rate and noise rate against v2.
 
-2. **Tune clustering for relabeling:** Iterate HDBSCAN params to reduce over-merging while keeping noise manageable; treat noise conservatively (do not force-assign low-confidence clips).
+2. **Evaluate gender-separated clustering:** Modify HDBSCAN to run independently within Female-classified and Male-classified embedding partitions. Unknown-classified clips handled post-hoc by nearest centroid. This eliminates MIXED_GENDER clusters by construction.
 
-3. **Design relabel mapping output:** Produce a deterministic mapping file from `source_id -> relabeled_speaker_id` (or `source_speaker_id -> canonical_cluster_id`) with confidence metadata for traceability.
+3. **Design relabel mapping output:** Produce a deterministic mapping file `source_id → canonical_cluster_id` with confidence metadata. This is the core artifact for `sna-dataset-labeled`.
 
-4. **Create labeled dataset pass:** Apply mapping on top of existing cleaned data and publish as a new dataset variant (working name: `sna-dataset-labeled`).
+4. **Scale to full dataset on Modal:** Port the validated clustering pipeline to a Modal script. Run on T4 GPU with batched ECAPA inference over all 16,980 clips. Expected runtime: ~15 minutes with batching.
 
-5. **Document contamination handling:** Record assumptions, thresholds, and known edge cases for dissertation reproducibility.
+5. **Create labeled dataset pass:** Apply relabel mapping on top of existing cleaned `/data/refined/` data and publish as `sna-dataset-labeled`.
+
+6. **Validate gender classifier on full speaker set:** After the full-dataset run, probe the classifier over all 168 speakers. If performance holds, publish as `{HF_USERNAME}/sna-gender-shona` — a genuine gap in the African NLP tooling ecosystem.
+
+7. **Document contamination handling:** Record assumptions, thresholds, and known edge cases for dissertation reproducibility.
 
 ---
 

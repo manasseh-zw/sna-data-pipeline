@@ -59,3 +59,10 @@ src/tests/audio/samples/
 src/tests/audio/speaker_audit/
 src/tests/audio/*.zip
 src/tests/audio/speaker_samples/
+
+# Gender classifier — training WAVs and generated model
+src/tests/audio/audit_speaker/gender_training_data/**/*.wav
+src/tests/audio/audit_speaker/gender_classifier_ecapa.pkl
+src/tests/audio/audit_speaker/gender_probe/
+
+/models
