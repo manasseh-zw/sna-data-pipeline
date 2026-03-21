@@ -57,3 +57,4 @@ src/speaker_audit/
 src/tests/audio/samples/
 src/tests/audio/speaker_audit/
 src/tests/audio/*.zip
+src/tests/audio/speaker_samples/
