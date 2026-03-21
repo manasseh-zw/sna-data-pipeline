@@ -2,9 +2,11 @@ You are helping build a data engineering pipeline for a Shona language (sna) spe
 
 **What we are building**
 
-A Modal-based data cleaning and preparation pipeline that takes the raw `google/WaxalNLP` Shona ASR dataset and produces a cleaned, annotated dataset ready for downstream ASR and TTS fine-tuning. The pipeline lives in its own repository `sna-data-pipeline` and is completely separate from any model training code. The goal is a general-purpose, opinionation-free dataset — no training-time decisions baked in. Consumers filter using the metadata columns.
+A Modal-based data cleaning and preparation pipeline that takes the raw `google/WaxalNLP` Shona ASR dataset and produces a cleaned, annotated dataset for downstream use. The pipeline lives in its own repository `sna-data-pipeline` and is completely separate from model training code. The goal is a general-purpose, opinionation-free dataset — no training-time decisions baked in. Consumers filter using metadata columns.
 
-The owner has a prior published version (`manassehzw/sna-tts-refined-v2`, 5,000 clips, ~21.66h) produced without speaker tracking or manual quality auditing. This new pipeline is the rigorous, properly engineered replacement.
+The owner has a prior published version (`manassehzw/sna-tts-refined-v2`, 5,000 clips, ~21.66h) produced without speaker tracking or manual quality auditing. This pipeline is the rigorous replacement.
+
+Status update: `manassehzw/sna-dataset` is already published from this pipeline. Current priority is now a second pass focused on speaker-label quality (`sna-dataset-labeled`, effectively a v2 labeling pass), not immediate TTS subset curation.
 
 ---
 
@@ -18,7 +20,8 @@ We use Modal for all compute. Every pipeline script is a Modal app with a single
 /data/final/         — split, normalised, upload-ready
 /data/reports/       — all audit JSON files from every phase
 /data/curate_test/   — temporary: 500-clip sample for local curation testing
-/data/speaker_audit/ — speaker ranking report + 3-clip samples per top-20 speaker
+/data/speaker_audit/ — earlier speaker ranking report + sample clips
+/data/speaker_samples/ — pulled stratified clips per top speaker for local identity audit
 ```
 
 Secrets are loaded via `modal.Secret.from_dotenv()`. The `.env` file contains `HF_TOKEN` and `HF_USERNAME`.
@@ -78,9 +81,9 @@ sna-data-pipeline/
 │   ├── annotate_metadata.py
 │   ├── speaker_analysis.py       — analysis utility, not a pipeline phase
 │   ├── normalize_text.py
-│   ├── normalize_audio.py        — Phase 4, READY TO RUN (validated locally)
-│   ├── split_and_upload.py       — Phase 5, not yet written
-│   ├── audit.py                  — Phase 6, not yet written
+│   ├── normalize_audio.py        — phase script retained for reproducibility
+│   ├── split_and_upload.py       — used for published `sna-dataset` release
+│   ├── audit.py                  — final reporting utilities (status may vary by branch)
 │   └── tests/
 │       ├── text/
 │       │   ├── unnormalized.txt
@@ -119,7 +122,7 @@ Loads from `/data/raw/`. Normalises `gender` to `Male`/`Female`, normalises `lan
 
 Loads from `/data/raw/`. Normalises transcriptions: strips smart quotes to ASCII apostrophe, collapses em/en dashes to spaces, normalises spaced hyphens, inserts space after sentence-ending period followed by capital, strips characters outside `[A-Za-z0-9.,?!'" -]`, collapses whitespace. Casing is preserved. Adds `has_punctuation` boolean. Writes `02_normalize_text_audit.json`. Saves to `/data/refined/`.
 
-**Phase 4 — normalize_audio.py** ✅ locally validated, READY TO RUN on full dataset
+**Phase 4 — normalize_audio.py** ✅ completed historically
 
 Loads from `/data/refined/`. Resamples to 24kHz mono. Runs WebRTC VAD (aggressiveness=2, 30ms frames) with smoothing (drop bursts <3 frames, bridge gaps ≤2 frames). Trims leading/trailing silence with 0.4s buffer. Applies flat intra-utterance gap trimming: any internal gap >150ms is trimmed to 80ms. Recomputes VAD mask on trimmed audio. Computes `snr_db`, `speech_ratio`, `quality_score`, `duration`. Hard-drops only rows where VAD finds zero speech or audio is empty after trimming. Also hard-drops blacklisted speakers (see below). Writes `04_normalize_audio_audit.json`. Saves back to `/data/refined/`.
 
@@ -139,11 +142,11 @@ Loads from `/data/refined/` after Phase 4. Drops clips with `duration < 5s`, the
 
 **Run command:** `modal run src/cleanup_audio.py`
 
-**Phase 6 — split_and_upload.py** — not yet written
+**Phase 6 — split_and_upload.py** ✅ completed historically
 
 Loads from `/data/refined/`. Performs stratified 80/10/10 train/valid/test split by `speaker_idx`. Reorders columns for clean HuggingFace dataset viewer presentation. Saves `DatasetDict` to `/data/final/`. Pushes to HuggingFace as `{HF_USERNAME}/sna-dataset` with a dataset card. Writes `06_split_audit.json`.
 
-**Phase 7 — audit.py** — not yet written
+**Phase 7 — audit.py** ✅ completed/iterated as needed
 
 Loads from `/data/final/`. Produces capstone-facing summary: total clips, total hours, speaker distribution, SNR stats, speech ratio distribution, gender balance, duration histogram. Writes `07_final_audit.json`.
 
@@ -198,26 +201,31 @@ Attempted kurtosis + high-frequency energy ratio detection for click/pop artifac
 
 **Current state**
 
-Phases 1–5 are in place (`cleanup_audio.py` added after audio normalization). Split/upload and final audit are still pending.
+Core pipeline phases were completed and `sna-dataset` was pushed to Hugging Face. The active workstream has shifted from first-pass pipeline completion to second-pass speaker identity relabeling and consistency improvement.
+
+Current active direction:
+
+- Build a labeled v2-style dataset (`sna-dataset-labeled`) by clustering speaker embeddings and correcting contaminated speaker IDs.
+- Use the local speaker sample audit workflow under `src/tests/audio/audit_speaker/` as the baseline for cluster tuning.
+- Prioritize speaker-label consistency over manual ear-testing every clip.
 
 ---
 
 **Immediate next steps (in order)**
 
-1. **Run Phase 4:** `modal run src/normalize_audio.py` — process all clips, write `04_normalize_audio_audit.json`, overwrite `/data/refined/` with normalized audio + quality metrics.
+1. **Stabilize cluster audit workflow:** Keep using `src/tests/audio/audit_speaker/audit_speaker_clusters.py` with isolated environment from `src/tests/audio/audit_speaker/requirements.txt`.
 
-2. **Run Phase 5:** `modal run src/cleanup_audio.py` — enforce post-normalization cleanup rules (`duration < 5s` and singleton-speaker drops), refresh `speaker_clip_count`, and write `05_cleanup_audio_audit.json`.
+2. **Tune clustering for relabeling:** Iterate HDBSCAN params to reduce over-merging while keeping noise manageable; treat noise conservatively (do not force-assign low-confidence clips).
 
-3. **Check both audits:** Review `04_normalize_audio_audit.json` and `05_cleanup_audio_audit.json` for drop reasons, duration distribution, and final retained speaker counts.
+3. **Design relabel mapping output:** Produce a deterministic mapping file from `source_id -> relabeled_speaker_id` (or `source_speaker_id -> canonical_cluster_id`) with confidence metadata for traceability.
 
-4. **Write and run Phase 6 (`split_and_upload.py`):** Stratified split + HuggingFace push as `sna-dataset` (the full general dataset).
+4. **Create labeled dataset pass:** Apply mapping on top of existing cleaned data and publish as a new dataset variant (working name: `sna-dataset-labeled`).
 
-5. **Write and run Phase 7 (`audit.py`):** Final capstone audit report.
-
-6. **Publish premium subset:** After `sna-dataset` is live, write a small script that filters to the 11 pristine+high speaker IDs and pushes as `sna-tts-v3`. This is just a filter + push, no reprocessing.
+5. **Document contamination handling:** Record assumptions, thresholds, and known edge cases for dissertation reproducibility.
 
 ---
 
 **Things noted but deliberately deferred**
 
+- Premium TTS subset curation/selection is deferred until speaker relabeling quality is acceptable.
 - Noise reduction / reverb correction: not applied. Full noise reduction (e.g. `noisereduce`) is deferred to future work.
