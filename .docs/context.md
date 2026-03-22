@@ -148,6 +148,12 @@ Loads from `/data/refined/` after Phase 4. Drops clips with `duration < 5s`, the
 
 **Run command:** `modal run src/cleanup_audio.py`
 
+**Phase 5.5 — pre_classification_audit.py** ✅ written
+
+Runs before `classify_speakers.py`. Loads the flat dataset from `/data/refined/`. Computes a "before" snapshot: total clips, total hours, unique `source_speaker_id` count, gender distribution by original label, per-speaker clip count and majority gender, and flags speakers with conflicting gender labels in the source data. Writes `pre_classification_audit.json` to `/data/reports/` and `pre_audit_metadata.csv` to `/data/relabel/` (one row per clip — the "before" CSV for post-classification diff). Also extracts all clips to `/data/wav_cache/{source_id}.wav` at 24 kHz (idempotent — skips files that already exist). This WAV cache is reused by `classify_speakers.py` and all later audio passes, so extraction happens exactly once.
+
+**Run command:** `modal run src/pre_classification_audit.py`
+
 **Phase 6 — split_and_upload.py** ✅ completed historically
 
 Loads from `/data/refined/`. Performs stratified 80/10/10 train/valid/test split by `speaker_idx`. Reorders columns for clean HuggingFace dataset viewer presentation. Saves `DatasetDict` to `/data/final/`. Pushes to HuggingFace as `{HF_USERNAME}/sna-dataset` with a dataset card. Writes `06_split_audit.json`.
@@ -242,17 +248,17 @@ The gender classifier has been validated via a probe script and an active learni
 
 **Immediate next steps (in order)**
 
-1. **Run v3 cluster audit:** Execute `audit_speaker_clusters.py` with the `.pkl` classifier active. Compare MIXED_GENDER rate and noise rate against v2.
+1. **Run pre-classification audit:** `modal run src/pre_classification_audit.py` — captures the "before" speaker/gender snapshot and extracts all WAV files to `/data/wav_cache/`. Must complete before classify_speakers.py.
 
-2. **Evaluate gender-separated clustering:** Modify HDBSCAN to run independently within Female-classified and Male-classified embedding partitions. Unknown-classified clips handled post-hoc by nearest centroid. This eliminates MIXED_GENDER clusters by construction.
+2. **Upload gender classifier to volume:** `modal volume put sna-data-vol src/tests/audio/audit_speaker/gender_classifier_ecapa.pkl /models/gender_classifier_ecapa.pkl`
 
-3. **Design relabel mapping output:** Produce a deterministic mapping file `source_id → canonical_cluster_id` with confidence metadata. This is the core artifact for `sna-dataset-labeled`.
+3. **Run full-dataset speaker classification:** Write and run `src/classify_speakers.py` (spec in `phase_classify_speakers.md`). Reads WAV cache, runs ECAPA + gender-separated HDBSCAN + noise rescue, writes `relabel_mapping.csv` and `cluster_report.csv` to `/data/relabel/`.
 
-4. **Scale to full dataset on Modal:** Port the validated clustering pipeline to a Modal script. Run on T4 GPU with batched ECAPA inference over all 16,980 clips. Expected runtime: ~15 minutes with batching.
+4. **Diff pre/post audit:** Join `pre_audit_metadata.csv` against `relabel_mapping.csv` on `source_id` to produce contamination figures for the dissertation.
 
-5. **Create labeled dataset pass:** Apply relabel mapping on top of existing cleaned `/data/refined/` data and publish as `sna-dataset-labeled`.
+5. **Apply relabel mapping:** Join mapping onto `/data/refined/` and publish as `sna-dataset-labeled`.
 
-6. **Validate gender classifier on full speaker set:** After the full-dataset run, probe the classifier over all 168 speakers. If performance holds, publish as `{HF_USERNAME}/sna-gender-shona` — a genuine gap in the African NLP tooling ecosystem.
+6. **Validate gender classifier on full 168-speaker set:** If Unknown rate < 12%, publish as `{HF_USERNAME}/sna-gender-shona`.
 
 7. **Document contamination handling:** Record assumptions, thresholds, and known edge cases for dissertation reproducibility.
 
