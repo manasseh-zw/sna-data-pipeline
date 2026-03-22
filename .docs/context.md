@@ -22,6 +22,10 @@ We use Modal for all compute. Every pipeline script is a Modal app with a single
 /data/curate_test/   — temporary: 500-clip sample for local curation testing
 /data/speaker_audit/ — earlier speaker ranking report + sample clips
 /data/speaker_samples/ — pulled stratified clips per top speaker for local identity audit
+/data/wav_cache/     — extracted WAV files at 24kHz, one per clip named {source_id}.wav
+                       written by classify_speakers.py; also used by later audio normalization
+/data/models/        — model artifacts uploaded from local (e.g. gender_classifier_ecapa.pkl)
+/data/relabel/       — output of classify_speakers.py: relabel_mapping.csv, cluster_report.csv
 ```
 
 Secrets are loaded via `modal.Secret.from_dotenv()`. The `.env` file contains `HF_TOKEN` and `HF_USERNAME`.
@@ -100,6 +104,8 @@ sna-data-pipeline/
 │           └── rejected/              — copies of flagged clips
 ├── .docs/
 │   ├── context.md                     — this file
+│   ├── audit_pre_post_classification.md — what to audit before/after classification; data for report figures
+│   ├── phase_classify_speakers.md     — Modal full-dataset classify/label plan
 │   └── artifact_detection_attempt.md  — documents the dropped artifact detection approach
 ├── .env
 ├── .env.example
