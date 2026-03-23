@@ -180,21 +180,77 @@ Rather than substituting another off-the-shelf model, a lightweight custom class
 - Why "Unknown" is the correct output for genuinely ambiguous voices rather than a forced label.
 - This classifier as a publishable artifact: first Shona-calibrated gender classifier, trained on speaker embeddings.
 
-## 10) Techniques Explored and Rejected
+## 10) Annotated Rebuild and Loudness Standardization
 
-## 9) Techniques Explored and Rejected
+### Implemented techniques
+- Added `rebuild_annotated.py` as a dedicated rebuild phase after speaker relabeling.
+- Dropped all noise-assigned clips (`cluster_id == -1`) before expensive audio work.
+- Rebuilt schema around relabel outputs:
+  - `cluster_id` -> `speaker_id`
+  - `cluster_gender` -> `gender`
+  - `cluster_confidence` -> `speaker_assignment_confidence`
+- Removed legacy identity fields from the annotated release (`source_speaker_id`, `speaker_idx`) and per-clip helper columns not needed in final schema.
+- Recomputed `speaker_clip_count` from post-noise-cleaned relabelled speakers.
+- Applied EBU R128 loudness normalization to **-23 LUFS** over `/data/wav_cache` into `/data/wav_normalised`.
+- Used skip tolerance (`+/-1 LU`) to avoid unnecessary processing for already-stable clips.
+- Tracked clipping pressure via `clips_peak_hit_0dbfs` audit counter.
+- Saved the output as DatasetDict to `/data/sna_annotated` using tmp -> promote for atomic replacement.
+
+### Report values to include (actual run)
+- Input clips: `16,980`
+- Noise dropped: `1,741`
+- Final clips: `15,239`
+- Unique speakers: `46`
+- Total hours: `78.5`
+- Loudness input mean/std: `-22.659 / 5.301 LUFS`
+- Loudness output mean/std: `-22.999 / 0.243 LUFS`
+- Clips normalized/skipped/failed: `12,458 / 2,781 / 0`
+
+## 11) Annotated Dataset Publication
+
+### Implemented techniques
+- Decoupled rebuild from publish by introducing `upload_annotated.py`.
+- Loaded `/data/sna_annotated` and pushed to Hugging Face as `manassehzw/sna-dataset-annotated`.
+- Uploaded a method-rich dataset card documenting:
+  - source contamination problem,
+  - relabeling method,
+  - gender classifier rationale,
+  - loudness normalization policy,
+  - schema and usage constraints.
+- Wrote dedicated upload audit artifact (`upload_annotated_audit.json`).
+
+### What to include in report
+- Why release decoupling (rebuild vs upload) improves operational safety.
+- How dataset cards act as reproducibility and governance artifacts.
+- Versioning narrative: `sna-dataset` -> `sna-dataset-annotated`.
+
+## 12) Local Validation Harness for Audio Decisions
+
+### Implemented techniques
+- Added local normalization sandbox under `src/tests/audio/normalization/`.
+- `normalize_volume.py`: controlled input/output folder A/B testing before full-volume execution.
+- `mic_pop_audit.py`: startup transient detection audit for clip-start pops.
+- Used these local scripts to validate policy decisions before running full Modal phases.
+
+### What to include in report
+- Why small-sample local A/B validation reduces costly remote reruns.
+- Decision outcome: global de-click/de-reverb not applied due to low prevalence and artifact risk.
+
+## 13) Techniques Explored and Rejected
 
 ### Implemented techniques
 - Tried heuristic artifact detection (kurtosis + high-frequency energy).
 - Documented high false-positive behavior and dropped the method.
-- Tried off-the-shelf gender classification (`prithivMLmods/Common-Voice-Gender-Detection`) — retained in pipeline as fallback but superseded by custom classifier after confirming distribution mismatch on Shona speech.
+- Tried off-the-shelf gender classification (`prithivMLmods/Common-Voice-Gender-Detection`) and replaced with Shona-calibrated logistic regression after confirming distribution mismatch.
+- Considered global enhancement (noise reduction/de-reverb) for full dataset and deferred it to task-specific TTS phase.
 
 ### What to include in report
-- Why heuristic artifact detection failed on this dataset (Shona plosives indistinguishable from clicks at signal level without a labelled baseline).
-- Why off-the-shelf gender models fail on low-resource languages — distribution mismatch, not model failure per se.
-- Importance of reporting negative results and near-misses in engineering research.
+- Why heuristic artifact detection failed (Shona plosives vs click signatures).
+- Why off-the-shelf gender models can fail on low-resource languages.
+- Why non-opinionated processing is preferable for a general-purpose release.
+- Importance of documenting negative findings.
 
-## 10) Suggested Technical Report Structure
+## 14) Suggested Technical Report Structure
 
 1. Problem statement and dataset goals
 2. System architecture (Modal + volume + phase pipeline)
@@ -202,14 +258,14 @@ Rather than substituting another off-the-shelf model, a lightweight custom class
 4. Text and metadata normalization techniques
 5. Audio normalization and quality scoring
 6. Cleanup rules and retention analysis
-7. Publication pipeline and reproducibility
-8. Speaker contamination challenge and manual audit findings
-9. Clustering-based speaker relabeling approach
-10. Gender classification: source label contamination, distribution mismatch, and custom classifier
-11. Active learning loop for classifier refinement
+7. Speaker contamination challenge and manual audit findings
+8. Clustering-based speaker relabeling approach
+9. Gender classification: contamination, distribution mismatch, and custom classifier
+10. Annotated rebuild and loudness standardization
+11. Publication pipeline and dataset-card governance
 12. Evaluation, limitations, and future work
 
-## 11) Metrics I Should Report
+## 15) Metrics I Should Report
 
 - Raw clips vs retained clips per phase
 - Total hours retained per phase
@@ -218,11 +274,18 @@ Rather than substituting another off-the-shelf model, a lightweight custom class
 - Clustering metrics:
   - number of clusters
   - noise percentage before and after rescue
+  - rescued clip count
   - mixed-source and mixed-gender flags per run
 - Gender classifier metrics:
   - training set size and composition (clips per gender, speakers per gender)
   - 5-fold CV accuracy
   - per-speaker Unknown rate before and after active learning loop
-  - comparison table: Wav2Vec2 predictions vs logistic regression on known-label speakers
-- Final dataset release summary and intended use constraints
-
+  - comparison table: Wav2Vec2 vs logistic regression on known-label speakers
+- Rebuild/loudness metrics:
+  - LUFS input vs output distribution (mean/std/min/max)
+  - normalized vs skipped vs failed counts
+  - clips hitting 0 dBFS ceiling after normalization
+- Release metrics:
+  - final clip count / total hours / unique speakers
+  - split sizes
+  - schema diff between `sna-dataset` and `sna-dataset-annotated`

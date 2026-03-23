@@ -6,7 +6,7 @@ A Modal-based data cleaning and preparation pipeline that takes the raw `google/
 
 The owner has a prior published version (`manassehzw/sna-tts-refined-v2`, 5,000 clips, ~21.66h) produced without speaker tracking or manual quality auditing. This pipeline is the rigorous replacement.
 
-Status update: `manassehzw/sna-dataset` is already published from this pipeline. Current priority is now a second pass focused on speaker-label quality (`sna-dataset-labeled`, effectively a v2 labeling pass), not immediate TTS subset curation.
+Status update: both `manassehzw/sna-dataset` (original cleaned release) and `manassehzw/sna-dataset-annotated` (speaker-relabelled + loudness-normalised release) are now published from this pipeline. Current priority has shifted to TTS subset planning from the annotated dataset.
 
 ---
 
@@ -26,6 +26,8 @@ We use Modal for all compute. Every pipeline script is a Modal app with a single
                        written by classify_speakers.py; also used by later audio normalization
 /data/models/        — model artifacts uploaded from local (e.g. gender_classifier_ecapa.pkl)
 /data/relabel/       — output of classify_speakers.py: relabel_mapping.csv, cluster_report.csv
+/data/wav_normalised/ — LUFS-normalised WAVs written during annotated rebuild
+/data/sna_annotated/  — annotated DatasetDict (train/validation/test), source for next TTS work
 ```
 
 Secrets are loaded via `modal.Secret.from_dotenv()`. The `.env` file contains `HF_TOKEN` and `HF_USERNAME`.
@@ -40,25 +42,25 @@ Source columns: `id`, `speaker_id`, `transcription`, `gender`, `language`, `audi
 
 ---
 
-**Final dataset schema**
+**Current annotated dataset schema**
 
 ```
-audio                 — trimmed, 24kHz, LUFS-normalised float32
+audio                 — 24kHz mono, LUFS-normalised float32
 transcription         — normalised Shona text
 source_id             — original id from WaxalNLP
-source_speaker_id     — original speaker hash from WaxalNLP
-speaker_idx           — stable integer 0..N sorted by speaker frequency descending
+speaker_id            — acoustically derived speaker class id
 speaker_clip_count    — total clips for this speaker across the full dataset
 language              — normalised to lowercase (sna)
-gender                — normalised to Male / Female
+gender                — resolved cluster label (Female / Male / Unknown)
 has_punctuation       — boolean derived from normalised transcription
 snr_db                — signal-to-noise ratio in dB
 speech_ratio          — fraction of VAD frames classified as speech
 quality_score         — composite score: snr_db minus reliability penalties
-duration              — trimmed clip duration in seconds
+duration              — clip duration in seconds
+speaker_assignment_confidence — confidence score for assigned speaker_id
 ```
 
-No opinionated flag columns. Consumers filter using `speaker_clip_count`, `snr_db`, `speech_ratio`, and `duration` directly.
+No opinionated flag columns. Consumers filter using `speaker_clip_count`, `snr_db`, `speech_ratio`, `duration`, and `speaker_assignment_confidence` directly.
 
 ---
 
@@ -87,6 +89,8 @@ sna-data-pipeline/
 │   ├── normalize_text.py
 │   ├── normalize_audio.py        — phase script retained for reproducibility
 │   ├── split_and_upload.py       — used for published `sna-dataset` release
+│   ├── rebuild_annotated.py      — rebuild + annotate + loudness-normalise to /data/sna_annotated
+│   ├── upload_annotated.py       — push /data/sna_annotated to Hugging Face + README
 │   ├── audit.py                  — final reporting utilities (status may vary by branch)
 │   └── tests/
 │       ├── text/
@@ -97,6 +101,7 @@ sna-data-pipeline/
 │       │   ├── pull_samples.py        — Modal: pull 500 clips from volume → zip
 │       │   ├── test_curate.py         — local: run normalize_audio logic + write audit outputs
 │       │   ├── speaker_audit.py       — Modal: rank all speakers by talk time, pull 3 clips each
+│       │   ├── normalization/          — local loudness + mic-pop testing harness
 │       │   └── samples/               — gitignored
 │       └── artifact_check/
 │           ├── detect.py              — kurtosis + HF energy artifact detector (see note)
@@ -163,6 +168,23 @@ Loads from `/data/refined/`. Performs stratified 80/10/10 train/valid/test split
 **Phase 7 — audit.py** ✅ completed/iterated as needed
 
 Loads from `/data/final/`. Produces capstone-facing summary: total clips, total hours, speaker distribution, SNR stats, speech ratio distribution, gender balance, duration histogram. Writes `07_final_audit.json`.
+
+**Phase 8 — rebuild_annotated.py** ✅ completed
+
+Loads from `/data/refined/` and `/data/relabel/relabel_mapping.csv`. Drops `cluster_id == -1` rows (noise), remaps schema to relabelled speaker fields, recomputes `speaker_clip_count`, normalises WAVs in `/data/wav_cache/` to -23 LUFS into `/data/wav_normalised/`, builds speaker-stratified 80/10/10 DatasetDict, saves to `/data/sna_annotated/`, and writes `rebuild_annotated_audit.json`.
+
+Latest audit snapshot:
+
+- input clips: 16,980
+- noise dropped: 1,741
+- final clips: 15,239
+- unique speakers: 46
+- total hours: 78.5
+- loudness output mean/std: -22.999 / 0.243 LUFS
+
+**Phase 9 — upload_annotated.py** ✅ completed
+
+Loads `/data/sna_annotated/`, pushes to Hugging Face as `{HF_USERNAME}/sna-dataset-annotated`, uploads dataset card README, and writes `upload_annotated_audit.json`.
 
 ---
 
@@ -242,36 +264,30 @@ Key properties:
 
 **Current state**
 
-Core pipeline phases are complete and `sna-dataset` is published on Hugging Face. The active workstream is second-pass speaker identity relabeling.
+Speaker relabeling and annotated rebuild are complete. The annotated dataset is live on Hugging Face (`manassehzw/sna-dataset-annotated`) and volume artifacts are in place (`/data/sna_annotated`, `/data/wav_normalised`, rebuild/upload audits).
 
-The local clustering audit (`audit_speaker_clusters.py`) has completed two runs:
+Local loudness validation harness was added under `src/tests/audio/normalization/`:
 
-- **v2**: ECAPA + HDBSCAN + Wav2Vec2 gender model → 31 clusters, 4.6% noise, 4 MIXED_GENDER clusters. Identified gender model as unreliable on Shona.
-- **v3 (pending)**: Same HDBSCAN setup with the new logistic regression gender classifier loaded from `.pkl`. Gender-separated clustering (HDBSCAN within each gender partition) to be explored.
+- `normalize_volume.py` for local LUFS A/B checks
+- `mic_pop_audit.py` for startup pop detection audit
 
-The gender classifier has been validated via a probe script and an active learning ear-test loop. It is ready for the v3 audit run.
+Mic-pop issue was assessed as low prevalence and no additional global audio enhancement (de-reverb/noise reduction) was applied for the general-purpose release.
 
 ---
 
 **Immediate next steps (in order)**
 
-1. **Run pre-classification audit:** `modal run src/pre_classification_audit.py` — captures the "before" speaker/gender snapshot and extracts all WAV files to `/data/wav_cache/`. Must complete before classify_speakers.py.
+1. **TTS candidate analysis phase:** write analysis script to profile `speaker_id` candidates from `/data/sna_annotated` using duration/quality/SNR/speech-ratio/confidence distributions and produce selection metrics.
 
-2. **Upload gender classifier to volume:** `modal volume put sna-data-vol src/tests/audio/audit_speaker/gender_classifier_ecapa.pkl /models/gender_classifier_ecapa.pkl`
+2. **Define TTS speaker selection criteria:** finalise thresholds and inclusion/exclusion rules from analysis outputs + ear checks.
 
-3. **Run full-dataset speaker classification:** Write and run `src/classify_speakers.py` (spec in `phase_classify_speakers.md`). Reads WAV cache, runs ECAPA + gender-separated HDBSCAN + noise rescue, writes `relabel_mapping.csv` and `cluster_report.csv` to `/data/relabel/`.
+3. **Build TTS subset pipeline:** implement `src/build_tts_subset.py` against `/data/sna_annotated` and publish `manassehzw/sna-tts` after validation.
 
-4. **Diff pre/post audit:** Join `pre_audit_metadata.csv` against `relabel_mapping.csv` on `source_id` to produce contamination figures for the dissertation.
-
-5. **Apply relabel mapping:** Join mapping onto `/data/refined/` and publish as `sna-dataset-labeled`.
-
-6. **Validate gender classifier on full 168-speaker set:** If Unknown rate < 12%, publish as `{HF_USERNAME}/sna-gender-shona`.
-
-7. **Document contamination handling:** Record assumptions, thresholds, and known edge cases for dissertation reproducibility.
+4. **Document dissertation figures:** include pre/post contamination, relabeling methodology, and loudness normalization outcomes from the new audits.
 
 ---
 
 **Things noted but deliberately deferred**
 
-- Premium TTS subset curation/selection is deferred until speaker relabeling quality is acceptable.
-- Noise reduction / reverb correction: not applied. Full noise reduction (e.g. `noisereduce`) is deferred to future work.
+- Global de-reverb / noise-reduction was not applied to the full annotated dataset to avoid over-opinionated processing and artifact risk.
+- Conditional enhancement remains a TTS-phase consideration only, pending selection analysis.
