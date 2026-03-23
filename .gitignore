@@ -59,6 +59,10 @@ src/tests/audio/samples/
 src/tests/audio/speaker_audit/
 src/tests/audio/*.zip
 src/tests/audio/speaker_samples/
+src/tests/audio/normalization/input/*
+!src/tests/audio/normalization/input/.gitkeep
+src/tests/audio/normalization/output/*
+!src/tests/audio/normalization/output/.gitkeep
 
 # Gender classifier — training WAVs and generated model
 src/tests/audio/audit_speaker/gender_training_data/**/*.wav

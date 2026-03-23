@@ -1,0 +1,22 @@
+{
+  "phase": "mic_pop_audit_local",
+  "input_dir": "/Users/manasseh/Projects/hit400/sna-data-pipeline/src/tests/audio/normalization/input",
+  "total_files": 400,
+  "valid_files": 400,
+  "failed_files": 0,
+  "flagged_files": [],
+  "flagged_pct_of_valid": 0.0,
+  "thresholds": {
+    "peak_window_ms": 25.0,
+    "early_peak_max_ms": 12.0,
+    "follow_start_ms": 20.0,
+    "follow_end_ms": 120.0,
+    "decay_early_ms": 10.0,
+    "decay_late_start_ms": 30.0,
+    "decay_late_end_ms": 100.0,
+    "peak_threshold_dbfs": -3.0,
+    "peak_to_rms_threshold_db": 12.0,
+    "decay_threshold_db": 8.0
+  },
+  "suggestion": "leave_as_is"
+}

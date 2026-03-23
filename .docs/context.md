@@ -1,4 +1,4 @@
-You are helping build a data engineering pipeline for a Shona language (sna) speech dataset. This is a capstone project where data engineering is a graded objective, so audit reports and clean documentation matter as much as the code itself.
+You are helping build a data engineering pipeline for a Shona language (sna) speech dataset. This is a capstone project where data engineering is a graded objective, so audit reports and clean documentation matter as much as the code itself
 
 **What we are building**
 
@@ -133,11 +133,13 @@ Loads from `/data/raw/`. Normalises transcriptions: strips smart quotes to ASCII
 Loads from `/data/refined/`. Resamples to 24kHz mono. Runs WebRTC VAD (aggressiveness=2, 30ms frames) with smoothing (drop bursts <3 frames, bridge gaps ≤2 frames). Trims leading/trailing silence with 0.4s buffer. Applies flat intra-utterance gap trimming: any internal gap >150ms is trimmed to 80ms. Recomputes VAD mask on trimmed audio. Computes `snr_db`, `speech_ratio`, `quality_score`, `duration`. Hard-drops only rows where VAD finds zero speech or audio is empty after trimming. Also hard-drops blacklisted speakers (see below). Writes `04_normalize_audio_audit.json`. Saves back to `/data/refined/`.
 
 **Blacklisted speakers in normalize_audio.py:**
+
 ```python
 BLACKLISTED_SPEAKER_IDS = {
     "DVRNxPvJnmebFbLnQhG9VSCLhdf2",   # 185 clips, all distorted/mumbled — manual review
 }
 ```
+
 To add more: append to this set with a comment documenting the reason.
 
 **Run command:** `modal run src/normalize_audio.py`
@@ -170,21 +172,23 @@ Full dataset: **168 speakers, 17,585 clips, ~99.4 hours of speech.**
 
 The top 20 speakers were manually ear-tested (3 clips each) and rated. Results:
 
-| Quality | Speakers | Clips | Hours | Notes |
-|---|---|---|---|---|
-| Pristine | 7 | 5,155 | 28.5h | 3,801 M / 1,354 F |
-| High | 4 | 1,839 | 10.5h | all female |
-| Medium-High | 4 | 1,418 | 9.4h | mixed |
-| Medium | 4 | 1,383 | 8.4h | mixed |
-| Medium-Low | 1 | 1,549 | 9.8h | rank-1 speaker, male |
+| Quality     | Speakers | Clips | Hours | Notes                |
+| ----------- | -------- | ----- | ----- | -------------------- |
+| Pristine    | 7        | 5,155 | 28.5h | 3,801 M / 1,354 F    |
+| High        | 4        | 1,839 | 10.5h | all female           |
+| Medium-High | 4        | 1,418 | 9.4h  | mixed                |
+| Medium      | 4        | 1,383 | 8.4h  | mixed                |
+| Medium-Low  | 1        | 1,549 | 9.8h  | rank-1 speaker, male |
 
 **8 junk speakers** (ranks 86, 95, 116, 164–168) have mean clip duration ~1s — likely upload errors. Only 380 clips, 0.11h. Consider adding to blacklist.
 
 **Planned published datasets:**
+
 1. **Full general dataset** (`sna-dataset`): all ~17k clips post-curation, all speakers, all quality levels. General-purpose, community contribution.
 2. **Premium TTS subset** (`sna-tts-v3`): filter `source_speaker_id IN (pristine_set + high_set)` = 11 speakers, ~6,994 clips, ~39 hours. For TTS fine-tuning (e.g. Sesame CSM 1B). No reprocessing needed — just a metadata filter on top of the full dataset.
 
 **Pristine speaker IDs** (for premium filter):
+
 ```
 T33w3KIsJJYMb9tmz2XxSYlgpcA2   male
 7UbpWlepR6OHT8S5tcibbkcQWOC2   male
@@ -196,6 +200,7 @@ CZQ37aLaUZfNpliatFqfC42MBUC3   female
 ```
 
 **High quality speaker IDs** (also included in premium):
+
 ```
 4HdcZXLtmjhpO6zY9qLnLNCs7OJ2   female (note: gender mislabelled in source)
 f4LbqfoJ6HXJeYxnuIrfZlP7qaM2   female
@@ -226,6 +231,7 @@ src/tests/audio/audit_speaker/
 ```
 
 Key properties:
+
 - Model: `sklearn.linear_model.LogisticRegression` on L2-normalised 192-d ECAPA-TDNN embeddings
 - Training data: 391 clips total (bootstrapped from clean audit clusters + active learning ear-test pass)
 - 5-fold CV accuracy: 100%
@@ -239,6 +245,7 @@ Key properties:
 Core pipeline phases are complete and `sna-dataset` is published on Hugging Face. The active workstream is second-pass speaker identity relabeling.
 
 The local clustering audit (`audit_speaker_clusters.py`) has completed two runs:
+
 - **v2**: ECAPA + HDBSCAN + Wav2Vec2 gender model → 31 clusters, 4.6% noise, 4 MIXED_GENDER clusters. Identified gender model as unreliable on Shona.
 - **v3 (pending)**: Same HDBSCAN setup with the new logistic regression gender classifier loaded from `.pkl`. Gender-separated clustering (HDBSCAN within each gender partition) to be explored.
 

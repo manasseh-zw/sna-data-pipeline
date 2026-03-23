@@ -1,0 +1,18 @@
+{
+  "target_lufs": -23.0,
+  "tolerance_lu": 1.0,
+  "total_files": 400,
+  "n_normalized": 322,
+  "n_skipped": 78,
+  "n_failed": 0,
+  "input_lufs": {
+    "mean": -22.48,
+    "min": -41.25,
+    "max": -9.71
+  },
+  "output_lufs": {
+    "mean": -22.99,
+    "min": -23.96,
+    "max": -22.01
+  }
+}
