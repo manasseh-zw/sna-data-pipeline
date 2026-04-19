@@ -69,4 +69,9 @@ src/tests/audio/audit_speaker/gender_training_data/**/*.wav
 src/tests/audio/audit_speaker/gender_classifier_ecapa.pkl
 src/tests/audio/audit_speaker/gender_probe/
 
+# TTS curation artifacts
+src/tests/sna-tts-curation/tts_samples/
+src/tests/sna-tts-curation/*.zip
+src/tests/sna-tts-curation/*.wav
+
 /models

@@ -1,0 +1,16 @@
+rank,speaker_id,gender,inclusion_status,quality_setting,quality_percentile_range,quality_score_floor,duration_cap_s,notes
+2,0,Female,primary,strict,p60-p100,73.24,20,Include at strict settings due reverb in lower-quality clips.
+3,29,Male,primary,standard,p50-p100,70.72,20,Include at standard settings; strong consistency and clarity.
+4,1,Female,primary,lenient,p50-p100,70.72,20,Top performer in this pass; allow lenient threshold.
+6,2,Female,primary,strict_plus,p70-p100,75.22,20,Preferred natural style; target 70th percentile and above.
+8,31,Male,primary,standard,p50-p100,70.72,20,Include at standard settings; acceptable style and energy.
+10,3,Female,primary,standard,p50-p100,70.72,20,Include at standard settings; pacing slower but usable.
+15,7,Female,primary,standard_high,p60-p100,73.24,20,Include with upper-quality emphasis.
+19,11,Female,primary,standard,p50-p100,70.72,20,Include at standard settings; good energy and workable environment.
+1,28,Male,conditional,very_strict,p70-p100,75.22,20,Not preferred style; only include if more hours needed.
+5,32,Male,conditional,very_strict,p70-p100,75.22,20,Only top-quality clips are usable.
+7,30,Male,conditional,strict,p60-p100,73.24,20,Include only if needed due mic/environment quality issues.
+9,4,Female,conditional,strict,p60-p100,73.24,20,Include if short on hours; avoid lower-quality clips.
+11,6,Female,conditional,strict,p60-p100,73.24,20,Borderline; keep conditional pending final balance.
+16,8,Female,conditional,strict,p60-p100,73.24,20,Style not preferred; include only if required for hours/balance.
+17,35,Male,conditional,strict,p60-p100,73.24,20,Speaker acceptable but quality is mixed; conditional include.
