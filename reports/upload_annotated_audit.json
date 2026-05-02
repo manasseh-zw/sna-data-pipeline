@@ -1,0 +1,20 @@
+{
+  "phase": "upload_annotated",
+  "timestamp": "2026-03-23T16:32:54.961829",
+  "source_path": "/data/sna_annotated",
+  "repo_id": "manassehzw/sna-dataset-annotated",
+  "total_clips": 15239,
+  "total_hours": 78.501,
+  "unique_speakers": 46,
+  "splits": {
+    "train": 12170,
+    "validation": 1504,
+    "test": 1565
+  },
+  "gender_distribution": {
+    "Female": 7420,
+    "Male": 7163,
+    "Unknown": 656
+  },
+  "readme_uploaded": true
+}

@@ -1,0 +1,23 @@
+{
+  "phase": "split_and_upload",
+  "timestamp": "2026-03-20T19:06:29.675503",
+  "repo_id": "manassehzw/sna-dataset",
+  "input_rows": 16980,
+  "split_seed": 42,
+  "ratios": {
+    "train": 0.8,
+    "validation": 0.1,
+    "test": 0.1
+  },
+  "splits": {
+    "train": 13532,
+    "validation": 1640,
+    "test": 1808
+  },
+  "speaker_coverage": {
+    "train_unique_speakers": 133,
+    "validation_unique_speakers": 85,
+    "test_unique_speakers": 133
+  },
+  "total_hours": 86.222
+}

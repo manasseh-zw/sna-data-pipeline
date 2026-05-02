@@ -1,0 +1,40 @@
+{
+  "phase": "normalize_audio",
+  "timestamp": "2026-03-20T15:45:45.750598",
+  "input_rows": 17585,
+  "kept_rows": 17400,
+  "dropped_rows": 185,
+  "drop_rate_pct": 1.05,
+  "drop_reasons": {
+    "no_speech_detected": 0,
+    "empty_after_trim": 0,
+    "blacklisted_speaker": 185
+  },
+  "total_hours": 86.441,
+  "vad_config": {
+    "aggressiveness": 2,
+    "frame_ms": 30,
+    "buffer_sec": 0.4,
+    "max_internal_gap_ms": 150,
+    "target_gap_ms": 90
+  },
+  "snr_db": {
+    "mean": 67.84,
+    "std": 12.23,
+    "min": 3.07,
+    "max": 90.11
+  },
+  "speech_ratio": {
+    "mean": 0.953,
+    "std": 0.027,
+    "min": 0.647,
+    "max": 1.0
+  },
+  "duration_distribution": {
+    "under_5s": 404,
+    "5s_to_10s": 186,
+    "10s_to_15s": 3139,
+    "15s_to_20s": 8895,
+    "over_20s": 4776
+  }
+}

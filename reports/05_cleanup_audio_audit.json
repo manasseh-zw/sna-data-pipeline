@@ -1,0 +1,19 @@
+{
+  "phase": "cleanup_audio",
+  "timestamp": "2026-03-20T16:21:15.996827",
+  "input_rows": 17400,
+  "kept_rows": 16980,
+  "dropped_rows": 420,
+  "drop_rate_pct": 2.41,
+  "drop_reasons": {
+    "under_5s": 393,
+    "singleton_speaker": 27
+  },
+  "min_duration_sec": 3.0,
+  "post_cleanup": {
+    "unique_speakers": 133,
+    "total_hours": 86.222,
+    "min_speaker_clip_count": 2,
+    "max_speaker_clip_count": 1549
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "phase": "classify_speakers",
+  "timestamp": "2026-03-22T18:20:30.827456",
+  "runtime_seconds": 5367.443,
+  "source_path": "/data/refined",
+  "total_clips": 16980,
+  "clips_with_embedding": 16980,
+  "clips_with_embedding_failure": 0,
+  "wav_cache": {
+    "path": "/data/wav_cache",
+    "existing_files": 16980,
+    "new_files_written": 0,
+    "write_failures": 0
+  },
+  "clusters": {
+    "count": 46,
+    "mixed_gender_clusters": 0,
+    "noise_before_rescue": 2535,
+    "noise_after_rescue": 1741,
+    "noise_rate_after_rescue": 0.102532,
+    "rescued_clips": 794
+  },
+  "gender_distribution_predicted": {
+    "Female": 8338,
+    "Male": 7646,
+    "Unknown": 996
+  },
+  "cluster_gender_distribution": {
+    "Female": 26,
+    "Male": 16,
+    "Unknown": 4
+  },
+  "hdbscan_parameters": {
+    "min_cluster_size": 50,
+    "min_samples": 10,
+    "metric": "euclidean",
+    "cluster_selection_method": "eom"
+  },
+  "gender_classifier": {
+    "path": "/data/models/gender_classifier_ecapa.pkl",
+    "metadata": {
+      "n_female_clips": 160,
+      "n_male_clips": 152,
+      "train_accuracy": 1.0,
+      "cv_accuracy": 1.0,
+      "ecapa_hub_id": "speechbrain/spkrec-ecapa-voxceleb",
+      "ecapa_local": "/Users/manasseh/Projects/hit400/sna-data-pipeline/models/spkrec-ecapa-voxceleb",
+      "trained_at": "2026-03-21T21:17:51.568101+00:00"
+    }
+  },
+  "output": {
+    "mapping_csv": "/data/relabel/relabel_mapping.csv",
+    "cluster_report_csv": "/data/relabel/cluster_report.csv",
+    "params_json": "/data/relabel/params_used.json",
+    "audit_json": "/data/reports/speaker_relabel_audit.json"
+  }
+}

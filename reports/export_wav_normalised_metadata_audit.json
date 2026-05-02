@@ -1,0 +1,20 @@
+{
+  "timestamp": "2026-03-30T09:58:09.556124",
+  "annotated_dataset_path": "/data/sna_annotated",
+  "wav_normalised_dir": "/data/wav_normalised",
+  "metadata_csv_path": "/data/wav_normalised/metadata.csv",
+  "total_rows_from_dataset": 15239,
+  "rows_after_validation": 15239,
+  "rows_removed_due_to_missing_wav": 0,
+  "columns": [
+    "source_id",
+    "speaker_id",
+    "gender",
+    "transcription",
+    "quality_score",
+    "duration",
+    "file_name"
+  ],
+  "validate_wavs": true,
+  "overwrite": false
+}

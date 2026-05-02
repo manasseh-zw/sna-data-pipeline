@@ -1,0 +1,100 @@
+{
+  "timestamp": "2026-03-23T22:04:00.751399",
+  "source_dataset": "/data/sna_annotated",
+  "config_source": "object",
+  "config_csv": "",
+  "include_conditional": false,
+  "output_root": "/data/tts_sesame",
+  "output_audio_dir": "/data/tts_sesame/audio",
+  "output_metadata_csv": "/data/tts_sesame/metadata.csv",
+  "output_summary_csv": "/data/tts_sesame/speaker_summary.csv",
+  "totals": {
+    "clips": 1960,
+    "hours": 9.058,
+    "unique_speakers": 8,
+    "copied_audio_files": 1960,
+    "missing_normalized_wavs": 0
+  },
+  "speakers": [
+    {
+      "speaker_id": 29,
+      "gender": "Male",
+      "inclusion_status": "primary",
+      "quality_setting": "standard",
+      "clips": 1246,
+      "hours": 5.655,
+      "mean_quality": 74.62000274658203,
+      "mean_duration": 16.34000015258789
+    },
+    {
+      "speaker_id": 1,
+      "gender": "Female",
+      "inclusion_status": "primary",
+      "quality_setting": "lenient",
+      "clips": 282,
+      "hours": 1.373,
+      "mean_quality": 76.08000183105469,
+      "mean_duration": 17.530000686645508
+    },
+    {
+      "speaker_id": 3,
+      "gender": "Female",
+      "inclusion_status": "primary",
+      "quality_setting": "standard",
+      "clips": 256,
+      "hours": 1.218,
+      "mean_quality": 79.25,
+      "mean_duration": 17.1299991607666
+    },
+    {
+      "speaker_id": 11,
+      "gender": "Female",
+      "inclusion_status": "primary",
+      "quality_setting": "standard",
+      "clips": 105,
+      "hours": 0.478,
+      "mean_quality": 82.55999755859375,
+      "mean_duration": 16.399999618530273
+    },
+    {
+      "speaker_id": 2,
+      "gender": "Female",
+      "inclusion_status": "primary",
+      "quality_setting": "strict_plus",
+      "clips": 26,
+      "hours": 0.117,
+      "mean_quality": 77.38999938964844,
+      "mean_duration": 16.239999771118164
+    },
+    {
+      "speaker_id": 7,
+      "gender": "Female",
+      "inclusion_status": "primary",
+      "quality_setting": "standard_high",
+      "clips": 18,
+      "hours": 0.086,
+      "mean_quality": 74.16999816894531,
+      "mean_duration": 17.170000076293945
+    },
+    {
+      "speaker_id": 31,
+      "gender": "Male",
+      "inclusion_status": "primary",
+      "quality_setting": "standard",
+      "clips": 16,
+      "hours": 0.077,
+      "mean_quality": 73.26000213623047,
+      "mean_duration": 17.389999389648438
+    },
+    {
+      "speaker_id": 0,
+      "gender": "Female",
+      "inclusion_status": "primary",
+      "quality_setting": "strict",
+      "clips": 11,
+      "hours": 0.053,
+      "mean_quality": 78.75,
+      "mean_duration": 17.200000762939453
+    }
+  ]
+}

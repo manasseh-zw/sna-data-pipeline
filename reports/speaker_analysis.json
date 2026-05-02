@@ -1,0 +1,1155 @@
+{
+  "phase": "speaker_analysis",
+  "timestamp": "2026-03-20T06:02:49.611527",
+  "total_speakers": 168,
+  "total_clips": 17585,
+  "gender_distribution_normalised": {
+    "Female": 10162,
+    "Male": 7423
+  },
+  "gender_breakdown_by_speaker": [
+    {
+      "gender": "Female",
+      "speaker_count": 112,
+      "total_clips": 10162
+    },
+    {
+      "gender": "Male",
+      "speaker_count": 56,
+      "total_clips": 7423
+    }
+  ],
+  "clip_count_histogram": [
+    {
+      "bucket": "1\u20139",
+      "min_clips": 1,
+      "max_clips": 9,
+      "speaker_count": 78,
+      "clip_count": 221,
+      "pct_of_total_clips": 1.26
+    },
+    {
+      "bucket": "10\u201324",
+      "min_clips": 10,
+      "max_clips": 24,
+      "speaker_count": 17,
+      "clip_count": 274,
+      "pct_of_total_clips": 1.56
+    },
+    {
+      "bucket": "25\u201349",
+      "min_clips": 25,
+      "max_clips": 49,
+      "speaker_count": 14,
+      "clip_count": 542,
+      "pct_of_total_clips": 3.08
+    },
+    {
+      "bucket": "50\u201399",
+      "min_clips": 50,
+      "max_clips": 99,
+      "speaker_count": 15,
+      "clip_count": 1082,
+      "pct_of_total_clips": 6.15
+    },
+    {
+      "bucket": "100\u2013199",
+      "min_clips": 100,
+      "max_clips": 199,
+      "speaker_count": 19,
+      "clip_count": 2900,
+      "pct_of_total_clips": 16.49
+    },
+    {
+      "bucket": "200\u2013499",
+      "min_clips": 200,
+      "max_clips": 499,
+      "speaker_count": 18,
+      "clip_count": 5908,
+      "pct_of_total_clips": 33.6
+    },
+    {
+      "bucket": "500+",
+      "min_clips": 500,
+      "max_clips": null,
+      "speaker_count": 7,
+      "clip_count": 6658,
+      "pct_of_total_clips": 37.86
+    }
+  ],
+  "cumulative_coverage": [
+    {
+      "min_clips_threshold": 10,
+      "speakers_kept": 90,
+      "clips_kept": 17364,
+      "pct_clips_kept": 98.74,
+      "pct_speakers_kept": 53.57
+    },
+    {
+      "min_clips_threshold": 20,
+      "speakers_kept": 78,
+      "clips_kept": 17200,
+      "pct_clips_kept": 97.81,
+      "pct_speakers_kept": 46.43
+    },
+    {
+      "min_clips_threshold": 30,
+      "speakers_kept": 71,
+      "clips_kept": 17038,
+      "pct_clips_kept": 96.89,
+      "pct_speakers_kept": 42.26
+    },
+    {
+      "min_clips_threshold": 50,
+      "speakers_kept": 59,
+      "clips_kept": 16548,
+      "pct_clips_kept": 94.1,
+      "pct_speakers_kept": 35.12
+    },
+    {
+      "min_clips_threshold": 75,
+      "speakers_kept": 49,
+      "clips_kept": 15897,
+      "pct_clips_kept": 90.4,
+      "pct_speakers_kept": 29.17
+    },
+    {
+      "min_clips_threshold": 100,
+      "speakers_kept": 44,
+      "clips_kept": 15466,
+      "pct_clips_kept": 87.95,
+      "pct_speakers_kept": 26.19
+    },
+    {
+      "min_clips_threshold": 150,
+      "speakers_kept": 35,
+      "clips_kept": 14317,
+      "pct_clips_kept": 81.42,
+      "pct_speakers_kept": 20.83
+    },
+    {
+      "min_clips_threshold": 200,
+      "speakers_kept": 25,
+      "clips_kept": 12566,
+      "pct_clips_kept": 71.46,
+      "pct_speakers_kept": 14.88
+    }
+  ],
+  "long_tail": {
+    "threshold": 50,
+    "tail_speakers": 109,
+    "tail_clips": 1037,
+    "pct_speakers": 64.88,
+    "pct_clips": 5.9
+  },
+  "per_speaker": [
+    {
+      "speaker_idx": 0,
+      "speaker_id": "7erMyYrd9qflZJjN1wOPrEgigQu2",
+      "clip_count": 1549,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 1,
+      "speaker_id": "T33w3KIsJJYMb9tmz2XxSYlgpcA2",
+      "clip_count": 1491,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 2,
+      "speaker_id": "7UbpWlepR6OHT8S5tcibbkcQWOC2",
+      "clip_count": 867,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 3,
+      "speaker_id": "2Eud8lyLlsMcciYhmlkwVRtBwi82",
+      "clip_count": 769,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 4,
+      "speaker_id": "4HdcZXLtmjhpO6zY9qLnLNCs7OJ2",
+      "clip_count": 705,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 5,
+      "speaker_id": "1PHOsx2JIpUU4lMLgTd3ssjITjf1",
+      "clip_count": 674,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 6,
+      "speaker_id": "6yMVEvNaWJXi2UbPLujF6C4uGVJ3",
+      "clip_count": 603,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 7,
+      "speaker_id": "3G2FJSUtrURBAEzZnL5t4lREAXF2",
+      "clip_count": 486,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 8,
+      "speaker_id": "CUBWhUHYrpdoA4u6bodqHGer0my1",
+      "clip_count": 466,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 9,
+      "speaker_id": "f4LbqfoJ6HXJeYxnuIrfZlP7qaM2",
+      "clip_count": 454,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 10,
+      "speaker_id": "CtZCmGBDOjYnqksPXa5d3Gl7z9i1",
+      "clip_count": 428,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 11,
+      "speaker_id": "akPZ3sZLNmWepmQ73pcfOBhbAXC3",
+      "clip_count": 423,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 12,
+      "speaker_id": "0V0O30nOtCOPDLoWZ1pSZpoGvYp1",
+      "clip_count": 391,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 13,
+      "speaker_id": "IORd2eNihBh3Uz0XkY4LdY9Ehps1",
+      "clip_count": 339,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 14,
+      "speaker_id": "KeZGlSe8KMNMWnnC3l3QPsPAOUH2",
+      "clip_count": 334,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 15,
+      "speaker_id": "CHczhd1C0ZTwDtmpNuZVyEIfqU53",
+      "clip_count": 287,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 16,
+      "speaker_id": "4I6m2NXNGIWZ5wB5SjgpccqFjtL2",
+      "clip_count": 287,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 17,
+      "speaker_id": "CZQ37aLaUZfNpliatFqfC42MBUC3",
+      "clip_count": 285,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 18,
+      "speaker_id": "13lBLON54icGjb0Hgg2OhJ5AgxJ2",
+      "clip_count": 284,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 19,
+      "speaker_id": "6MXQrhAUdeQRGhKRUyE6daG3Qvm2",
+      "clip_count": 282,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 20,
+      "speaker_id": "2Q9Qx8uHQ5VAkWNdgqd7mVEeE2u1",
+      "clip_count": 257,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 21,
+      "speaker_id": "x78Xo9rvJUaWam0JDzmvkIufFHp1",
+      "clip_count": 254,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 22,
+      "speaker_id": "vXEDg10Xu4MxNaneKbHNogUoAkG2",
+      "clip_count": 238,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 23,
+      "speaker_id": "yMp9VdnNyORCJnbDnscFtd4cVHn2",
+      "clip_count": 212,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 24,
+      "speaker_id": "DS6hxJnyXlYI6P8AJQ3wE6UAOx22",
+      "clip_count": 201,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 25,
+      "speaker_id": "YbvzAao3AMeJQvwkBlwZVItOsn92",
+      "clip_count": 191,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 26,
+      "speaker_id": "fVOjNSI6wUelfRpE86wE1z170O73",
+      "clip_count": 189,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 27,
+      "speaker_id": "W3obc3eoZYUAB22hEBxO3qso9352",
+      "clip_count": 188,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 29,
+      "speaker_id": "1hsZ9plACwbUjolprhO9KPopzji2",
+      "clip_count": 187,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 28,
+      "speaker_id": "3TJZHIth5tY646wZREH7LVRhqhD2",
+      "clip_count": 187,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 30,
+      "speaker_id": "DVRNxPvJnmebFbLnQhG9VSCLhdf2",
+      "clip_count": 185,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 31,
+      "speaker_id": "MRTL0yRE9JYPru6liwSsoRCMIiD3",
+      "clip_count": 160,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 32,
+      "speaker_id": "FjWt9cvjUvSd8Gn5y0FTqctULdg2",
+      "clip_count": 157,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 33,
+      "speaker_id": "9YsbXfx0ppQJk9wKB9iinCzo42e2",
+      "clip_count": 156,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 34,
+      "speaker_id": "0B0oxTbCrKeSD3CojZrSlAt7Je93",
+      "clip_count": 151,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 35,
+      "speaker_id": "q7CSRCHvTrOuNdrAnuBLhdSnT9I2",
+      "clip_count": 148,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 36,
+      "speaker_id": "oCN8mxzXTwaSHzRN0Uuo4Zd3PSY2",
+      "clip_count": 136,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 37,
+      "speaker_id": "Mg2nsqbQ5IR7buwlHrHBQqyf4iZ2",
+      "clip_count": 135,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 38,
+      "speaker_id": "FChdqE4fUlO8RBopBzfXsDLDIHR2",
+      "clip_count": 133,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 39,
+      "speaker_id": "2xRfhns8LycwNgZA7uoGhqbPFhx2",
+      "clip_count": 130,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 40,
+      "speaker_id": "Br0zHa3NtAgKAmG8ATRWsvsqFiw1",
+      "clip_count": 124,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 41,
+      "speaker_id": "B4yRePglzmUwngNAp6JL08jcuoC3",
+      "clip_count": 122,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 42,
+      "speaker_id": "Irq6eQrKEpQekboldgJje6AU5ws1",
+      "clip_count": 121,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 43,
+      "speaker_id": "5sARICpRDvc7D3wcUA1zOqyQbIq1",
+      "clip_count": 100,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 44,
+      "speaker_id": "DOToxzuX5sOrpgBfaHxwVNzE7la2",
+      "clip_count": 98,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 45,
+      "speaker_id": "VhbTVNcBgoU9GMXQK1BgpkkmfCH2",
+      "clip_count": 91,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 46,
+      "speaker_id": "tmHt2JhxrfWp3wBlMVh873MkGz52",
+      "clip_count": 85,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 47,
+      "speaker_id": "6xxsSWfShAUAktSJ7BIoL4a91py1",
+      "clip_count": 80,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 48,
+      "speaker_id": "SRs7BWecPpVIpPZCGjUZxh7qDEO2",
+      "clip_count": 77,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 49,
+      "speaker_id": "MPNJZS5hwXVNawQTpd9Sq8qBGfy2",
+      "clip_count": 70,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 50,
+      "speaker_id": "JpzKm9ugWWVNwgonQZOMBvy5jxp2",
+      "clip_count": 69,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 52,
+      "speaker_id": "3pfBfFLrM0PwyQrhUeEQHvDbjak2",
+      "clip_count": 69,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 51,
+      "speaker_id": "mlCx7b2KkFU7F2pOKuAWLqvzp5q2",
+      "clip_count": 69,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 54,
+      "speaker_id": "Ss9GBR97MCUXMMi0ibM4EcwQpGH2",
+      "clip_count": 68,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 53,
+      "speaker_id": "dJbZPsh9kjQGwQ2fnlpHuNIeOfO2",
+      "clip_count": 68,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 55,
+      "speaker_id": "tuCj2k05qHcsv9oDamPForPCs2z1",
+      "clip_count": 67,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 56,
+      "speaker_id": "HXSmKKHwhSeTISajB4DdrPePyLm2",
+      "clip_count": 61,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 57,
+      "speaker_id": "ugCjWk8fNAVo0yz8V6uTwTqBrFk1",
+      "clip_count": 59,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 58,
+      "speaker_id": "O1bXJt6tFoh5LXu40Cy8sWGHPxz1",
+      "clip_count": 51,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 59,
+      "speaker_id": "fOCzY1CDIsMKq21MsHuUaZVwFbo2",
+      "clip_count": 49,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 60,
+      "speaker_id": "6M06gC7xWhbh19yiCidNz0rTBfo1",
+      "clip_count": 46,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 61,
+      "speaker_id": "GpUAaoiJCqWAAdihqYNKdupdXt83",
+      "clip_count": 45,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 62,
+      "speaker_id": "2GfAHOGLCMfp6vj7fjsnId56HXV2",
+      "clip_count": 44,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 64,
+      "speaker_id": "1yd7uFLdjbT2eBY27VHfDErBk992",
+      "clip_count": 43,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 63,
+      "speaker_id": "W6GzwAxpxecKOqKdTABMainkNhQ2",
+      "clip_count": 43,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 65,
+      "speaker_id": "A6o8btd1cNQM39nPwzCrT22gBRY2",
+      "clip_count": 42,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 66,
+      "speaker_id": "b0jlnEWrFCarUWG42cy1e7pgeQc2",
+      "clip_count": 41,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 67,
+      "speaker_id": "BZX9mSdmcoZiTmaYJMaMNcBUljR2",
+      "clip_count": 37,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 68,
+      "speaker_id": "QYYD1VPs5zOOh8x8lq7z6WcokrA3",
+      "clip_count": 35,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 69,
+      "speaker_id": "VAp1pmjYIyev66DWGvidE9zObii2",
+      "clip_count": 34,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 70,
+      "speaker_id": "CSq89cWA0TWOd1UgfWefqXSUDBO2",
+      "clip_count": 31,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 71,
+      "speaker_id": "2oHrhVl3UobyYyCCDbrZBde23n53",
+      "clip_count": 27,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 72,
+      "speaker_id": "K0mMLammDeg9yqNLBYJ5CiU54WH2",
+      "clip_count": 25,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 74,
+      "speaker_id": "QSKgFLvfxbf0LRdS3IF6tYUWtkp2",
+      "clip_count": 23,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 73,
+      "speaker_id": "SCCzdgbiwCUnM4vfV7aQXnKvTPz2",
+      "clip_count": 23,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 76,
+      "speaker_id": "Pe64Rsyj1OSHk6XUstNw8nh6mZh1",
+      "clip_count": 22,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 75,
+      "speaker_id": "6WEyaB6qn4T26wtAG9PVz9OB1Fq1",
+      "clip_count": 22,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 77,
+      "speaker_id": "011NYZ63olfcf3Ga8ZZbuD9WGpX2",
+      "clip_count": 20,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 78,
+      "speaker_id": "9eQZEZ56whPI1ULpPEjHLNuMbDn2",
+      "clip_count": 19,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 80,
+      "speaker_id": "5TTwtEbx8wXZ3YrVFqoh76yW1kf2",
+      "clip_count": 15,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 79,
+      "speaker_id": "muV9lNs9wSTlqF8obkyIEheSGU52",
+      "clip_count": 15,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 82,
+      "speaker_id": "mGPceAauQsZURQ3B2S9uyksBXr03",
+      "clip_count": 15,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 81,
+      "speaker_id": "DjhRSn1KslY6anw288LBQRBrxn52",
+      "clip_count": 15,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 83,
+      "speaker_id": "poK5rF3IQFc9IO6FIqlSzo2aSkH3",
+      "clip_count": 14,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 84,
+      "speaker_id": "VaQf47xFJZVasrczw7fFTzcR89F3",
+      "clip_count": 13,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 86,
+      "speaker_id": "fwnJYV3ssJghSJI9AxinUVv7j4F3",
+      "clip_count": 13,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 85,
+      "speaker_id": "XNh4GlwhoZgZ1I92GNbKMmuDmhv2",
+      "clip_count": 13,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 87,
+      "speaker_id": "jMb2AW0Q0wRcNq5GZNa5Zw9Avkf2",
+      "clip_count": 12,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 88,
+      "speaker_id": "1KMChoDMJ6SGnXzjJ5ex5y73YVF2",
+      "clip_count": 10,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 89,
+      "speaker_id": "DzM8fsEF9xP4LxrDDNLzJNs33t62",
+      "clip_count": 10,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 90,
+      "speaker_id": "8Gk398NslUSbyxRbutnqKQXYU1h1",
+      "clip_count": 9,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 91,
+      "speaker_id": "4URedfPc8wRohpeU0OsEMmbhuEl2",
+      "clip_count": 8,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 93,
+      "speaker_id": "6BCtkAIc3igMAQAErIrII2hioio2",
+      "clip_count": 7,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 94,
+      "speaker_id": "TboNIK9nfmTqNg9griXK2zbk6PZ2",
+      "clip_count": 7,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 95,
+      "speaker_id": "pkzyCkVSnmaSBOYRkPRopIJ0Anl2",
+      "clip_count": 7,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 92,
+      "speaker_id": "hOQjSNiXjcQ6cfwyvEniTQLZAaH2",
+      "clip_count": 7,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 97,
+      "speaker_id": "c5I3z0IMLnalOzwEHA0Z5vYtYsg1",
+      "clip_count": 6,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 96,
+      "speaker_id": "7TDArJGctkgPYy6g7tLsfQqh3D33",
+      "clip_count": 6,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 100,
+      "speaker_id": "8AJbICUFSiaWuFvYA80XbSuPODm2",
+      "clip_count": 5,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 104,
+      "speaker_id": "Jag9Df163TNZELFfRXqdQhCsL5s1",
+      "clip_count": 5,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 105,
+      "speaker_id": "JBxNQ6h86KRyMScqOxEVARiXZ3K3",
+      "clip_count": 5,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 101,
+      "speaker_id": "vqlc93V9EsPoAY2ndLhn3ysWREe2",
+      "clip_count": 5,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 102,
+      "speaker_id": "1gz9O02DnCVxvz0PaOOLQy4CQcJ2",
+      "clip_count": 5,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 103,
+      "speaker_id": "3KPzdCfQCyZf62HeQdXBj5Xln5I2",
+      "clip_count": 5,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 98,
+      "speaker_id": "bZCMc2vJbjVdmMnKfgpMwdUkXgr1",
+      "clip_count": 5,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 99,
+      "speaker_id": "cOE3UXzDl4NGvbbSn0BEtvdWlnC2",
+      "clip_count": 5,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 112,
+      "speaker_id": "diN4zuafY4RR1y0A4Q4RYMD85Aw2",
+      "clip_count": 4,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 106,
+      "speaker_id": "Zbm87NtUhaXKyItV2llIYACvCVF3",
+      "clip_count": 4,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 111,
+      "speaker_id": "41uA2NNgDGPBZWCi04caHwphjpB3",
+      "clip_count": 4,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 110,
+      "speaker_id": "1r1vKeWJxMQJWjCnW150bqfxOzE3",
+      "clip_count": 4,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 107,
+      "speaker_id": "JpDFrZ884ndhASbHU8kCpWyXIwi1",
+      "clip_count": 4,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 108,
+      "speaker_id": "BOwvwSl4FLPHxB0NCVVaZihizDy2",
+      "clip_count": 4,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 109,
+      "speaker_id": "4N4cR93XpHPJqMImRTvvaLxvKWV2",
+      "clip_count": 4,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 122,
+      "speaker_id": "3ifgZEAV2sPUHHMVbaCT7oGqR952",
+      "clip_count": 3,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 125,
+      "speaker_id": "0K6g2pMYkjdiw6rOFwrxQWD7mkR2",
+      "clip_count": 3,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 117,
+      "speaker_id": "5Wz4yteXKETvWtwT74xqSyNGgjf2",
+      "clip_count": 3,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 115,
+      "speaker_id": "CEOO7ShTYfarPfhrCneQIqWKAci1",
+      "clip_count": 3,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 113,
+      "speaker_id": "L8OjP6NNnweOobO0ofWxLAX0qs52",
+      "clip_count": 3,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 119,
+      "speaker_id": "cyx5WpFHrGU3vMMerG1TVlqtMQ53",
+      "clip_count": 3,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 116,
+      "speaker_id": "jOXpKZiS4IX70N5fI6fYtRZkXmw2",
+      "clip_count": 3,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 123,
+      "speaker_id": "w2kksUUj2jVxQJ3LrAufIBEDjJp1",
+      "clip_count": 3,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 121,
+      "speaker_id": "uXzNdc3k5mU6Pgtnef0xeMWHsq52",
+      "clip_count": 3,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 118,
+      "speaker_id": "QtZxDQnE97eBb3XxoWQbBMneOy82",
+      "clip_count": 3,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 114,
+      "speaker_id": "bDnL0UJDvBbHqCsI7LkYLGMinXE3",
+      "clip_count": 3,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 120,
+      "speaker_id": "Ql66TTEAK2QxoLrXPg74W4ZVyMB3",
+      "clip_count": 3,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 124,
+      "speaker_id": "UbISvk81BFgvtpci2IQX3JiSPmW2",
+      "clip_count": 3,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 126,
+      "speaker_id": "3fPx3se4Dmg8eblL8Jj85Sfnjoo2",
+      "clip_count": 2,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 127,
+      "speaker_id": "3dC5zFovevQRAM13QFAr6tzhKuo1",
+      "clip_count": 2,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 139,
+      "speaker_id": "JgH2hQDxUdhPKcRfix0xmXDBh9s1",
+      "clip_count": 2,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 137,
+      "speaker_id": "Dygtv2gCPCRmwFBfBOJCE9HI9LC3",
+      "clip_count": 2,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 135,
+      "speaker_id": "wVN1dXWLcRbFof5CCf9GTUZW6hr1",
+      "clip_count": 2,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 136,
+      "speaker_id": "VClWvO2Pxga4oSG1ufhAdfRGIEG2",
+      "clip_count": 2,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 133,
+      "speaker_id": "3aIGhdo6wrdgaFajpuTVXQeErh62",
+      "clip_count": 2,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 132,
+      "speaker_id": "3Tn3T71AmXN8Y4SHOL37Y1ruAK72",
+      "clip_count": 2,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 138,
+      "speaker_id": "9yqlsIwO7IMl5CvyF5BlJXmdyNx1",
+      "clip_count": 2,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 134,
+      "speaker_id": "BKx6S8Q0VIf7yB3FbjKCofatTih2",
+      "clip_count": 2,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 130,
+      "speaker_id": "O6oc06v9zJZvUmtoKalmnifVfxT2",
+      "clip_count": 2,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 129,
+      "speaker_id": "ygxbx0yRpoWxjirVbqAYNLLLEtZ2",
+      "clip_count": 2,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 128,
+      "speaker_id": "woS8HVp5eLdf9lSd5Gdlpmi6K3T2",
+      "clip_count": 2,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 140,
+      "speaker_id": "iFMiBXeHHZbNv7Q6zL4wmGOWSGi2",
+      "clip_count": 2,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 131,
+      "speaker_id": "iSYuLbOUBcNkMB4N4p2p2thNXdD3",
+      "clip_count": 2,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 145,
+      "speaker_id": "3TKkP6V2TZa0wOPZFjj8ak3pEok1",
+      "clip_count": 1,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 149,
+      "speaker_id": "1izXx0aiq5OKwyDcN2hsVy8tR933",
+      "clip_count": 1,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 156,
+      "speaker_id": "0vXFInNdsqN57qQBnazTnRzbvBf1",
+      "clip_count": 1,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 148,
+      "speaker_id": "4JBm1OGRuXMGVFTZ6D3G255jam72",
+      "clip_count": 1,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 164,
+      "speaker_id": "JJSdMaUa9MXmIlf5kUzdNwT8Uc43",
+      "clip_count": 1,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 153,
+      "speaker_id": "JpW8d7LkX8ZlD3ywqLUSMPSHn7u1",
+      "clip_count": 1,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 158,
+      "speaker_id": "IZLCEWKbfOMIwHyOMElUFOGRjc13",
+      "clip_count": 1,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 162,
+      "speaker_id": "6d0XCbgxtHTcdXGmuJz8a19KTTx2",
+      "clip_count": 1,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 154,
+      "speaker_id": "BmtV8XD2KTYfbMH3mgykq4sbMdF3",
+      "clip_count": 1,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 150,
+      "speaker_id": "CaHzmBxWdTWPqL1zqRBHMnE75gv2",
+      "clip_count": 1,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 165,
+      "speaker_id": "Dy3u7gKhmQSQoKftl30R2PhDn6s2",
+      "clip_count": 1,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 155,
+      "speaker_id": "QJELIACs8Of8VawDdlSQAnZaGLD3",
+      "clip_count": 1,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 143,
+      "speaker_id": "PP6aWeGqrGR3ME2ElljXF0of1XJ2",
+      "clip_count": 1,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 163,
+      "speaker_id": "OKbbn8T2ILQMSAdbUHeRVWsZNMp1",
+      "clip_count": 1,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 147,
+      "speaker_id": "NCQnwqNyHpd4bCQRK0NYWwzq1gH3",
+      "clip_count": 1,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 167,
+      "speaker_id": "KkmD9irMoMMjhHaAg7P8VPMLDbY2",
+      "clip_count": 1,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 146,
+      "speaker_id": "KVtD0zED7IeccId51a447LXiGf13",
+      "clip_count": 1,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 161,
+      "speaker_id": "MEZK396QprgpSyxPZAVg49kDXRx2",
+      "clip_count": 1,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 152,
+      "speaker_id": "LIgHTUESE2SaDlMGe5JPWbEz5O92",
+      "clip_count": 1,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 159,
+      "speaker_id": "V8cpoyqIfqXJW3QTYwbHwFHvB1H3",
+      "clip_count": 1,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 142,
+      "speaker_id": "lHKz9fBGuqRXOFXq3KDx7hTImas2",
+      "clip_count": 1,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 144,
+      "speaker_id": "gYocZpN3WASDNtQEzooGnkGM3zH3",
+      "clip_count": 1,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 157,
+      "speaker_id": "imfyj6mdq8aHKNa0gh2uYTkgWYC3",
+      "clip_count": 1,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 166,
+      "speaker_id": "sqlen5Av5hhJzoIyxirgxox3S3F3",
+      "clip_count": 1,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 141,
+      "speaker_id": "qH8B4X9TiGcj9PFrpqtxFjwe6e33",
+      "clip_count": 1,
+      "gender": "Female"
+    },
+    {
+      "speaker_idx": 151,
+      "speaker_id": "xtv4NPcKriNPWEXzcmUwz36RIs02",
+      "clip_count": 1,
+      "gender": "Male"
+    },
+    {
+      "speaker_idx": 160,
+      "speaker_id": "xYhuDECG87NVHdXjUtUWjNM78HC2",
+      "clip_count": 1,
+      "gender": "Female"
+    }
+  ]
+}

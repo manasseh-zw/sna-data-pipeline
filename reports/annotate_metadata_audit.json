@@ -1,0 +1,41 @@
+{
+  "phase": "annotate_metadata",
+  "timestamp": "2026-03-20T06:17:57.191039",
+  "total_rows": 17585,
+  "columns": [
+    "source_id",
+    "source_speaker_id",
+    "transcription",
+    "language",
+    "gender",
+    "audio",
+    "speaker_idx",
+    "speaker_clip_count"
+  ],
+  "gender": {
+    "before": {
+      "Female": 9385,
+      "Male": 5688,
+      "male": 1735,
+      "female": 777
+    },
+    "after": {
+      "Female": 10162,
+      "Male": 7423
+    }
+  },
+  "language": {
+    "before": {
+      "sna": 17585
+    },
+    "after": {
+      "sna": 17585
+    }
+  },
+  "speaker_clip_count": {
+    "min": 1,
+    "max": 1549,
+    "median": 423.0,
+    "mean": 564.4
+  }
+}

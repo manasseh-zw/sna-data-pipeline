@@ -1,0 +1,44 @@
+{
+  "phase": "rebuild_annotated",
+  "timestamp": "2026-03-23T14:46:37.658093",
+  "source_path": "/data/refined",
+  "input_clips": 16980,
+  "noise_dropped": 1741,
+  "final_clips": 15239,
+  "unique_speakers": 46,
+  "total_hours": 78.5,
+  "loudness_target_lufs": -23.0,
+  "loudness_skip_tolerance_lu": 1.0,
+  "clips_normalised": 12458,
+  "clips_skipped_loudness": 2781,
+  "clips_failed_loudness": 0,
+  "clips_peak_hit_0dbfs": 1405,
+  "loudness_input_lufs": {
+    "mean": -22.659,
+    "min": -46.381,
+    "max": -9.712,
+    "std": 5.301
+  },
+  "loudness_output_lufs": {
+    "mean": -22.999,
+    "min": -24.379,
+    "max": -22.0,
+    "std": 0.243
+  },
+  "loudness_gain_db": {
+    "mean": -0.341,
+    "min": -13.288,
+    "max": 23.381,
+    "std": 5.301
+  },
+  "splits": {
+    "train": 12170,
+    "validation": 1504,
+    "test": 1565
+  },
+  "gender_distribution": {
+    "Female": 7420,
+    "Male": 7163,
+    "Unknown": 656
+  }
+}

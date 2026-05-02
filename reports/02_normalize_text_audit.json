@@ -1,0 +1,55 @@
+{
+  "phase": "normalize_text",
+  "timestamp": "2026-03-20T06:41:19.843062",
+  "total_rows": 17585,
+  "columns": [
+    "source_id",
+    "source_speaker_id",
+    "transcription",
+    "language",
+    "gender",
+    "audio",
+    "speaker_idx",
+    "speaker_clip_count",
+    "has_punctuation"
+  ],
+  "char_audit": {
+    "unexpected_chars_before": {
+      "'\"'": 358,
+      "'\\n'": 291,
+      "'('": 117,
+      "')'": 117,
+      "'\u00ed'": 67,
+      "'\u00e0'": 17,
+      "'\u00fa'": 17,
+      "'&'": 8,
+      "'\u00f1'": 7,
+      "'\u00f3'": 7,
+      "'`'": 5,
+      "'\u00e1'": 5,
+      "'\u00e9'": 3,
+      "';'": 2,
+      "'\u00f2'": 2,
+      "'/'": 1,
+      "'\u00d7'": 1,
+      "'\u0101'": 1,
+      "'\u0155'": 1,
+      "'['": 1
+    },
+    "unexpected_chars_after": {
+      "'\"'": 358
+    }
+  },
+  "has_punctuation": {
+    "true": 17394,
+    "false": 191,
+    "pct_true": 98.91
+  },
+  "transcription_length": {
+    "mean_chars": 191.4,
+    "median_chars": 185.0,
+    "min_chars": 18,
+    "max_chars": 488,
+    "empty_count": 0
+  }
+}
